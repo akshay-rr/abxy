@@ -1,0 +1,1 @@
+create table TIME_BONUS (ID int not null auto_increment,NAME text,TYPE text,TARGET_TIME int,MULTIPLIER int,UPPER_BOUND int,UID int,FOREIGN KEY (UID) REFERENCES USERS(ID),PRIMARY KEY (ID)) AUTO_INCREMENT = 1;
