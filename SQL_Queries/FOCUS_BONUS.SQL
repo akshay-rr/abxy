@@ -1,0 +1,1 @@
+mysql> create table FOCUS_BONUS (ID int not null auto_increment,NAME text,TYPE text,LOWER_BOUND int,DISTRACTION_PENALTY int,UID int,PRIMARY KEY (ID),FOREIGN KEY (UID) REFERENCES USERS(ID)) AUTO_INCREMENT = 1;
