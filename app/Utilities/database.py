@@ -18,7 +18,7 @@ class DB:
             )
 
     def select(self, query, fetchall=1):
-        # All Select Queries
+        # Select Queries
         try:
             cur = self.mydb.cursor()
         except:
