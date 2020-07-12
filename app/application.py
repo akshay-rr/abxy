@@ -45,6 +45,40 @@ def logNegTaskRequest():
     # Function Call
     return "1"
 
+@application.route('/API/createTimeBonusRequest/', methods=['POST'])
+def createTimeBonusRequest():
+    # Function Call
+    return "1"
+
+@application.route('/API/createRepeatBonusRequest/', methods=['POST'])
+def createRepeatBonusRequest():
+    # Function Call
+    return "1"
+
+@application.route('/API/createFocusBonusRequest/', methods=['POST'])
+def createFocusBonusRequest():
+    # Function Call
+    return "1"
+
+@application.route('/API/createTimePenRequest/', methods=['POST'])
+def createTimePenRequest():
+    # Function Call
+    return "1"
+
+@application.route('/API/createRepeatPenRequest/', methods=['POST'])
+def createRepeatPenRequest():
+    # Function Call
+    return "1"
+
+@application.route('/API/listBonusRequest/', methods=['POST'])
+def listBonusRequest():
+    # Function Call
+    return "1"
+
+@application.route('/API/listPenRequest/', methods=['POST'])
+def listPenRequest():
+    # Function Call
+    return "1"
 ###############################################################################
 #
 ###############################################################################
