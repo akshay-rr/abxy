@@ -24,7 +24,7 @@ def createUserRequest():
     email = request.form['email']
     pwd = request.form['pwd']
     if email and pwd:
-        return userctrl.createUser(email, pwd)
+        return str(userctrl.createUser(email, pwd))
     return "Invalid Request: Items Missing"
 
 @application.route('/API/loginUserRequest/', methods=['POST'])
@@ -32,7 +32,7 @@ def loginUserRequest():
     email = request.form['email']
     pwd = request.form['pwd']
     if email and pwd:
-        return userctrl.loginUser(email, pwd)
+        return str(userctrl.loginUser(email, pwd))
     return "Invalid Request: Items Missing"
 
 @application.route('/API/createTaskRequest/', methods=['POST'])
@@ -95,9 +95,9 @@ def createTimeBonusRequest():
     multiplier = request.form['multiplier']
     upperbound = request.form['upperbound']
     if uid and upperbound and type=='LOGARITHMIC':
-        return ctrl.createTimeBonus(name, type multiplier, upperbound, uid)
+        return ctrl.createTimeBonus(name, type, multiplier, upperbound, uid)
     if uid and multiplier and type=="ADDITIVE":
-        return ctrl.createTimeBonus(name, type multiplier, upperbound, uid)
+        return ctrl.createTimeBonus(name, type, multiplier, upperbound, uid)
     return "Invalid Request"
 
 @application.route('/API/createRepeatBonusRequest/', methods=['POST'])
@@ -133,9 +133,9 @@ def createTimePenRequest():
     upperbound = request.form['upperbound']
 
     if uid and upperbound and type=='LOGARITHMIC':
-        return ctrl.createTimePen(name, type multiplier, upperbound, uid)
+        return ctrl.createTimePen(name, type, multiplier, upperbound, uid)
     if uid and multiplier and type=="ADDITIVE":
-        return ctrl.createTimePen(name, type multiplier, upperbound, uid)
+        return ctrl.createTimePen(name, type, multiplier, upperbound, uid)
 
     return "Invalid Request"
 

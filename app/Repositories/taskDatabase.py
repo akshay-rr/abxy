@@ -13,18 +13,22 @@ class TaskDatabase:
     		return -1
 
     def getUserPasswordByID(self, uid):
-    	result = self.db.select("SELECT PASSWORD FROM USERS WHERE ID = %s"%(uid), fetchall=0)
+    	result = self.db.select("SELECT PASSWORD FROM ACCOUNTS WHERE UID = %s"%(uid), fetchall=0)
     	if result:
     		return result[0]
     	else:
     		return -1
 
 
-    def createNewUser(self, email, password)
-	    if not self.db.insert("INSERT INTO USERS(POINTS,EMAIL) VALUES(0,'%s')"%(email)):
-	    	return -1
-	    uid = self.getUserByEmail(email)
-	    if not self.db.insert("INSERT INTO ACCOUNTS(T,EMAIL,PASSWORD,UID) VALUES('%s','%s','%s',%s)"%(str(datetime.Now()),email,password,uid)):
-	    	return -1
-	    return uid
-
+    def createNewUser(self, email, password):
+        if not self.db.insert("INSERT INTO USERS(POINTS,EMAIL) VALUES(0,'%s')"%(email)):
+        	return -1
+        uid = self.getUserIDByEmail(email)
+        try:
+            res=self.db.insert("INSERT INTO ACCOUNTS(T,EMAIL,PASSWORD,UID) VALUES('%s','%s','%s',%s)"%(str(datetime.now()),email,password,uid))
+        except Exception as e:
+            res=0
+            print(e)
+        if not res:
+        	return -1
+        return uid
