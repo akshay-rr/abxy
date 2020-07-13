@@ -32,3 +32,18 @@ class TaskDatabase:
         if not res:
         	return -1
         return uid
+
+    def createNewTimeBonus(self, name, type, multiplier, upperbound, uid):
+        if not self.db.insert("INSERT INTO TIME_BONUS(NAME,TYPE,MULTIPLIER,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s,%s)"%(name,type,multiplier,upperbound,uid)):
+        	return -1
+        return 1
+
+    def createNewRepeatBonus(self, name, frequency, upperbound, uid):
+        if not self.db.insert("INSERT INTO REPEAT_BONUS(NAME,FREQUENCY,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s)"%(name,frequency,upperbound,uid)):
+        	return -1
+        return 1
+
+    def createNewFocusBonus(self, name, type, lowerbound, distraction_penalty, uid):
+        if not self.db.insert("INSERT INTO FOCUS_BONUS(NAME,TYPE,LOWER_BOUND,DISTRACTION_PENALTY,UID) VALUES('%s','%s',%s,%s,%s)"%(name,type,lowerbound,distraction_penalty,uid)):
+        	return -1
+        return 1

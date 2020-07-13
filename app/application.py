@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import requests
 from Utilities.database import DB
-from Controller.user import UserController
+from Controller.userController import UserController
 from Repositories.taskDatabase import TaskDatabase
 
 application = app = Flask(__name__)
@@ -104,9 +104,10 @@ def createTimeBonusRequest():
 def createRepeatBonusRequest():
     uid = request.form['uid']
     name = request.form['name']
+    frequency = request.form['frequency']
     upperbound = request.form['upperbound']
-    if uid and upperbound and name:
-        return ctrl.createRepeatBonus(name, upperbound, uid)
+    if uid and upperbound and name and frequency:
+        return ctrl.createRepeatBonus(name, frequency, upperbound, uid)
     return "Invalid Request"
 
 @application.route('/API/createFocusBonusRequest/', methods=['POST'])
