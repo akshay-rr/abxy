@@ -4,13 +4,16 @@ from datetime import datetime
 import json
 import requests
 from Utilities.database import DB
-from Controller.models import Controller
+from Controller.user import UserController
+from Repositories.taskDatabase import TaskDatabase
 
 application = app = Flask(__name__)
 
 application.secret_key = "ABXY0"
 
-ctrl = Controller()
+tdb = TaskDatabase('aa1g61rixhyool1.cbvzqizsnmrt.us-east-1.rds.amazonaws.com','admin','b-SCALE2020','abxy')
+userctrl = UserController(tdb)
+ctrl = UserController(tdb)
 
 ###############################################################################
 # USER ACTIONS
@@ -21,7 +24,7 @@ def createUserRequest():
     email = request.form['email']
     pwd = request.form['pwd']
     if email and pwd:
-        return ctrl.createUser(email, pwd)
+        return userctrl.createUser(email, pwd)
     return "Invalid Request: Items Missing"
 
 @application.route('/API/loginUserRequest/', methods=['POST'])
@@ -29,7 +32,7 @@ def loginUserRequest():
     email = request.form['email']
     pwd = request.form['pwd']
     if email and pwd:
-        return ctrl.loginUser(email, pwd)
+        return userctrl.loginUser(email, pwd)
     return "Invalid Request: Items Missing"
 
 @application.route('/API/createTaskRequest/', methods=['POST'])
