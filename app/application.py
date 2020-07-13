@@ -17,6 +17,7 @@ db = DB("aa1g61rixhyool1.cbvzqizsnmrt.us-east-1.rds.amazonaws.com", "admin", "b-
 
 @application.route('/API/createUserRequest/', methods=['POST'])
 def createUserRequest():
+
     # Function Call
     return "1"
 
