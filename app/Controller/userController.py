@@ -4,14 +4,14 @@ class UserController:
 	def __init__(self,tdb):
 		self.taskDatabase = tdb
 
-	def createUser(self,email, pwd):
-		if self.taskDatabase.getUserIDByEmail(email)!=-1:
+	def createUser(self,user):
+		if self.taskDatabase.getUserIDByEmail(user.email)!=-1:
 			# the user already exists!
 			return -1
-		return self.taskDatabase.putNewUser(email,pwd)
+		return self.taskDatabase.putNewUser(user)
 
-	def loginUser(self,email,pwd):
-		uid = self.taskDatabase.getUserIDByEmail(email)
+	def loginUser(self,user):
+		uid = self.taskDatabase.getUserIDByEmail(user.email)
 		if uid==-1:
 			return -1
 
