@@ -21,6 +21,17 @@ class Task:
 		self.focus_bonus_id = focus_bonus_id
 		self.id = id
 
+class TaskLogEntry:
+	def __init__(self, uid, tid, duration, focus, remarks, repetition=-1, score=None, id=-1):
+		self.uid=uid
+		self.tid=tid
+		self.duration=duration
+		self.focus=focus
+		self.repetition=repetition
+		self.remarks=remarks
+		self.score=score
+		self.id=id
+
 class TimeBonus:
 	def __init__(self, name, type, multiplier, upper_bound, uid, id=-1):
 		self.name = name

@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 import requests
 from Utilities.database import DB
+from Entities.entities import User, Task, TimeBonus, RepeatBonus, FocusBonus
 from Controller.userController import UserController
 from Controller.bonusController import BonusController
 from Controller.taskController import TaskController
@@ -27,7 +28,8 @@ def createUserRequest():
     email = request.form['email']
     pwd = request.form['pwd']
     if email and pwd:
-        return str(userctrl.createUser(email, pwd))
+        user_object = User(email, pwd)
+        return str(user_ctrl.createUser(user_object))
     return "Invalid Request: Items Missing"
 
 @application.route('/API/loginUserRequest/', methods=['POST'])
@@ -35,7 +37,8 @@ def loginUserRequest():
     email = request.form['email']
     pwd = request.form['pwd']
     if email and pwd:
-        return str(userctrl.loginUser(email, pwd))
+        user_object = User(email, pwd)
+        return str(user_ctrl.loginUser(user_object))
     return "Invalid Request: Items Missing"
 
 @application.route('/API/createTaskRequest/', methods=['POST'])
@@ -50,9 +53,10 @@ def createTaskRequest():
     time_bonus_id = request.form['time_bonus_id']
     repeat_bonus_id = request.form['repeat_bonus_id']
     focus_bonus_id = request.form['focus_bonus_id']
+    task_object = Task(uid, name, desc, tags, type, base_score, target_time, time_bonus_id, repeat_bonus_id, focus_bonus_id)
     if name and desc and base_score and time_bonus_id and focus_bonus_id and repeat_bonus_id:
         if target_time or ((not target_time) and type=='EVENT'):
-            return str(task_ctrl.createTask(uid, name, desc, tags, type, base_score, target_time, time_bonus_id, repeat_bonus_id, focus_bonus_id))
+            return str(task_ctrl.createTask(task_object))
     return "Invalid Request"
 
 @application.route('/API/logTaskRequest/', methods=['POST'])
@@ -100,9 +104,11 @@ def createTimeBonusRequest():
     multiplier = request.form['multiplier']
     upper_bound = request.form['upper_bound']
     if uid and upper_bound and type=='LOGARITHMIC':
-        return str(bonus_ctrl.createTimeBonus(name, type, multiplier, upper_bound, uid))
+        time_bonus_object = TimeBonus(name, type, multiplier, upper_bound, uid)
+        return str(bonus_ctrl.createTimeBonus(time_bonus_object))
     if uid and multiplier and type=="ADDITIVE":
-        return str(bonus_ctrl.createTimeBonus(name, type, multiplier, upper_bound, uid))
+        time_bonus_object = TimeBonus(name, type, multiplier, upper_bound, uid)
+        return str(bonus_ctrl.createTimeBonus(time_bonus_object))
     return "Invalid Request"
 
 @application.route('/API/createRepeatBonusRequest/', methods=['POST'])
@@ -112,7 +118,8 @@ def createRepeatBonusRequest():
     frequency = request.form['frequency']
     upper_bound = request.form['upper_bound']
     if uid and upper_bound and name and frequency:
-        return str(bonus_ctrl.createRepeatBonus(name, frequency, upper_bound, uid))
+        repeat_bonus_object = RepeatBonus(name, frequency, upper_bound, uid)
+        return str(bonus_ctrl.createRepeatBonus(repeat_bonus_object))
     return "Invalid Request"
 
 @application.route('/API/createFocusBonusRequest/', methods=['POST'])
@@ -124,10 +131,12 @@ def createFocusBonusRequest():
     distraction_penalty = request.form['distraction_penalty']
 
     if uid and name and lower_bound and type=='MULTIPLICATIVE':
-        return str(bonus_ctrl.createFocusBonus(name, type, lower_bound, distraction_penalty, uid))
+        focus_bonus_object = FocusBonus(name, type, lower_bound, distraction_penalty, uid)
+        return str(bonus_ctrl.createFocusBonus(focus_bonus_object))
 
     if uid and name and distraction_penalty and type=='ADDITIVE':
-        return str(bonus_ctrl.createFocusBonus(name, type, lower_bound, distraction_penalty, uid))
+        focus_bonus_object = FocusBonus(name, type, lower_bound, distraction_penalty, uid)
+        return str(bonus_ctrl.createFocusBonus(focus_bonus_object))
     return "Invalid Request"
 
 @application.route('/API/createTimePenRequest/', methods=['POST'])
@@ -158,7 +167,11 @@ def createRepeatPenRequest():
 def listBonusRequest():
     uid = request.form['uid']
     if uid:
-        return bonus_ctrl.listBonus(uid)
+        response = bonus_ctrl.listBonusesByUID(uid)
+        if response==-1:
+            return "-1"
+        else:
+            return response
     return "Invalid Request"
 
 @application.route('/API/listPenRequest/', methods=['POST'])

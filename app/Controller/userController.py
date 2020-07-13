@@ -18,7 +18,7 @@ class UserController:
 		actualPassword=self.taskDatabase.getUserPasswordByID(uid)
 		if actualPassword==-1:
 			return -1
-		if actualPassword!=pwd:
+		if actualPassword!=user.password:
 			return -1
 
 		return uid
