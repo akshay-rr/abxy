@@ -19,6 +19,12 @@ class TaskDatabase:
     	else:
     		return -1
 
+    def getUserByID(self, uid):
+        result = self.db.select("SELECT * FROM USERS WHERE ID=%s"%(uid), fetchall=0)
+        if result:
+            return result[0]
+        return -1
+
 
     def createNewUser(self, email, password):
         if not self.db.insert("INSERT INTO USERS(POINTS,EMAIL) VALUES(0,'%s')"%(email)):

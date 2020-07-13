@@ -5,6 +5,7 @@ import json
 import requests
 from Utilities.database import DB
 from Controller.userController import UserController
+from Controller.bonusController import BonusController
 from Repositories.taskDatabase import TaskDatabase
 
 application = app = Flask(__name__)
@@ -12,8 +13,8 @@ application = app = Flask(__name__)
 application.secret_key = "ABXY0"
 
 tdb = TaskDatabase('aa1g61rixhyool1.cbvzqizsnmrt.us-east-1.rds.amazonaws.com','admin','b-SCALE2020','abxy')
-userctrl = UserController(tdb)
-ctrl = UserController(tdb)
+user_ctrl = UserController(tdb)
+bonus_ctrl = BonusController(tdb)
 
 ###############################################################################
 # USER ACTIONS
@@ -93,11 +94,11 @@ def createTimeBonusRequest():
     name = request.form['name']
     type = request.form['type']
     multiplier = request.form['multiplier']
-    upperbound = request.form['upperbound']
-    if uid and upperbound and type=='LOGARITHMIC':
-        return ctrl.createTimeBonus(name, type, multiplier, upperbound, uid)
+    upper_bound = request.form['upper_bound']
+    if uid and upper_bound and type=='LOGARITHMIC':
+        return str(bonus_ctrl.createTimeBonus(name, type, multiplier, upper_bound, uid))
     if uid and multiplier and type=="ADDITIVE":
-        return ctrl.createTimeBonus(name, type, multiplier, upperbound, uid)
+        return str(bonus_ctrl.createTimeBonus(name, type, multiplier, upper_bound, uid))
     return "Invalid Request"
 
 @application.route('/API/createRepeatBonusRequest/', methods=['POST'])
@@ -105,9 +106,9 @@ def createRepeatBonusRequest():
     uid = request.form['uid']
     name = request.form['name']
     frequency = request.form['frequency']
-    upperbound = request.form['upperbound']
-    if uid and upperbound and name and frequency:
-        return ctrl.createRepeatBonus(name, frequency, upperbound, uid)
+    upper_bound = request.form['upper_bound']
+    if uid and upper_bound and name and frequency:
+        return str(bonus_ctrl.createRepeatBonus(name, frequency, upper_bound, uid))
     return "Invalid Request"
 
 @application.route('/API/createFocusBonusRequest/', methods=['POST'])
@@ -115,14 +116,14 @@ def createFocusBonusRequest():
     uid = request.form['uid']
     name = request.form['name']
     type = request.form['type']
-    lowerbound = request.form['lowerbound']
+    lower_bound = request.form['lower_bound']
     distraction_penalty = request.form['distraction_penalty']
 
-    if uid and name and lowerbound and type=='LOGARITHMIC':
-        return ctrl.createFocusBonus(name, type, lowerbound, distraction_penalty, uid)
+    if uid and name and lower_bound and type=='MULTIPLICATIVE':
+        return str(bonus_ctrl.createFocusBonus(name, type, lower_bound, distraction_penalty, uid))
 
     if uid and name and distraction_penalty and type=='ADDITIVE':
-        return ctrl.createFocusBonus(name, type, lowerbound, distraction_penalty, uid)
+        return str(bonus_ctrl.createFocusBonus(name, type, lower_bound, distraction_penalty, uid))
     return "Invalid Request"
 
 @application.route('/API/createTimePenRequest/', methods=['POST'])
@@ -131,12 +132,12 @@ def createTimePenRequest():
     name = request.form['name']
     type = request.form['type']
     multiplier = request.form['multiplier']
-    upperbound = request.form['upperbound']
+    upper_bound = request.form['upper_bound']
 
-    if uid and upperbound and type=='LOGARITHMIC':
-        return ctrl.createTimePen(name, type, multiplier, upperbound, uid)
+    if uid and upper_bound and type=='LOGARITHMIC':
+        return ctrl.createTimePen(name, type, multiplier, upper_bound, uid)
     if uid and multiplier and type=="ADDITIVE":
-        return ctrl.createTimePen(name, type, multiplier, upperbound, uid)
+        return ctrl.createTimePen(name, type, multiplier, upper_bound, uid)
 
     return "Invalid Request"
 
@@ -144,9 +145,9 @@ def createTimePenRequest():
 def createRepeatPenRequest():
     uid = request.form['uid']
     name = request.form['name']
-    upperbound = request.form['upperbound']
-    if uid and upperbound and name:
-        return ctrl.createRepeatPen(name, upperbound, uid)
+    upper_bound = request.form['upper_bound']
+    if uid and upper_bound and name:
+        return ctrl.createRepeatPen(name, upper_bound, uid)
     return "Invalid Request"
 
 @application.route('/API/listBonusRequest/', methods=['POST'])
