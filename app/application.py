@@ -68,6 +68,7 @@ def logTaskRequest():
 
 @application.route('/API/createNegTaskRequest/', methods=['POST'])
 def createNegTaskRequest():
+    uid = request.form['uid']
     name = request.form['name']
     desc = request.form['desc']
     tags = request.form['tags']
@@ -78,7 +79,7 @@ def createNegTaskRequest():
     repeat_pen_id = request.form['repeat_pen_id']
     if name and desc and base_score and time_pen_id and repeat_pen_id:
         if target_time or ((not target_time) and type=='EVENT'):
-            return task_ctrl.createNegTask(name, desc, tags, type, base_score, target_time, time_pen_id, repeat_pen_id)
+            return task_ctrl.createNegTask(uid, name, desc, tags, type, base_score, target_time, time_pen_id, repeat_pen_id)
     return "Invalid Request"
 
 @application.route('/API/logNegTaskRequest/', methods=['POST'])
