@@ -6,6 +6,7 @@ import requests
 from Utilities.database import DB
 from Controller.userController import UserController
 from Controller.bonusController import BonusController
+from Controller.taskController import TaskController
 from Repositories.taskDatabase import TaskDatabase
 
 application = app = Flask(__name__)
@@ -15,6 +16,7 @@ application.secret_key = "ABXY0"
 tdb = TaskDatabase('aa1g61rixhyool1.cbvzqizsnmrt.us-east-1.rds.amazonaws.com','admin','b-SCALE2020','abxy')
 user_ctrl = UserController(tdb)
 bonus_ctrl = BonusController(tdb)
+task_ctrl = TaskController(tdb)
 
 ###############################################################################
 # USER ACTIONS
@@ -38,8 +40,9 @@ def loginUserRequest():
 
 @application.route('/API/createTaskRequest/', methods=['POST'])
 def createTaskRequest():
+    uid = request.form['uid']
     name = request.form['name']
-    desc = request.form['desc']
+    desc = request.form['description']
     tags = request.form['tags']
     type = request.form['type']
     base_score = request.form['base_score']
@@ -49,7 +52,7 @@ def createTaskRequest():
     focus_bonus_id = request.form['focus_bonus_id']
     if name and desc and base_score and time_bonus_id and focus_bonus_id and repeat_bonus_id:
         if target_time or ((not target_time) and type=='EVENT'):
-            return ctrl.createTask(name, desc, tags, type, base_score, target_time, time_bonus_id, repeat_bonus_id, focus_bonus_id)
+            return str(task_ctrl.createTask(uid, name, desc, tags, type, base_score, target_time, time_bonus_id, repeat_bonus_id, focus_bonus_id))
     return "Invalid Request"
 
 @application.route('/API/logTaskRequest/', methods=['POST'])
@@ -60,7 +63,7 @@ def logTaskRequest():
     focus = request.form['focus']
     remarks = request.form['remarks']
     if uid and tid and focus:
-        return ctrl.logTask(uid, tid, duration, focus, remarks)
+        return task_ctrl.logTask(uid, tid, duration, focus, remarks)
     return "Invalid Request"
 
 @application.route('/API/createNegTaskRequest/', methods=['POST'])
@@ -75,7 +78,7 @@ def createNegTaskRequest():
     repeat_pen_id = request.form['repeat_pen_id']
     if name and desc and base_score and time_pen_id and repeat_pen_id:
         if target_time or ((not target_time) and type=='EVENT'):
-            return ctrl.createNegTask(name, desc, tags, type, base_score, target_time, time_pen_id, repeat_pen_id)
+            return task_ctrl.createNegTask(name, desc, tags, type, base_score, target_time, time_pen_id, repeat_pen_id)
     return "Invalid Request"
 
 @application.route('/API/logNegTaskRequest/', methods=['POST'])
@@ -85,7 +88,7 @@ def logNegTaskRequest():
     duration = request.form['duration']
     remarks = request.form['remarks']
     if uid and ntid:
-        return ctrl.logNegTask(uid, ntid, duration, remarks)
+        return task_ctrl.logNegTask(uid, ntid, duration, remarks)
     return "Invalid Request"
 
 @application.route('/API/createTimeBonusRequest/', methods=['POST'])
@@ -135,9 +138,9 @@ def createTimePenRequest():
     upper_bound = request.form['upper_bound']
 
     if uid and upper_bound and type=='LOGARITHMIC':
-        return ctrl.createTimePen(name, type, multiplier, upper_bound, uid)
+        return bonus_ctrl.createTimePen(name, type, multiplier, upper_bound, uid)
     if uid and multiplier and type=="ADDITIVE":
-        return ctrl.createTimePen(name, type, multiplier, upper_bound, uid)
+        return bonus_ctrl.createTimePen(name, type, multiplier, upper_bound, uid)
 
     return "Invalid Request"
 
@@ -147,21 +150,21 @@ def createRepeatPenRequest():
     name = request.form['name']
     upper_bound = request.form['upper_bound']
     if uid and upper_bound and name:
-        return ctrl.createRepeatPen(name, upper_bound, uid)
+        return bonus_ctrl.createRepeatPen(name, upper_bound, uid)
     return "Invalid Request"
 
 @application.route('/API/listBonusRequest/', methods=['POST'])
 def listBonusRequest():
     uid = request.form['uid']
     if uid:
-        return ctrl.listBonus(uid)
+        return bonus_ctrl.listBonus(uid)
     return "Invalid Request"
 
 @application.route('/API/listPenRequest/', methods=['POST'])
 def listPenRequest():
     uid = request.form['uid']
     if uid:
-        return ctrl.listPen(uid)
+        return bonus_ctrl.listPen(uid)
     return "Invalid Request"
 ###############################################################################
 #

@@ -7,6 +7,9 @@ from datetime import datetime
 # from database import DB
 ##############################################################################
 
+
+# TODO
+# Return Dictionary results. NO TUPLE!!!!
 class DB:
 
     def __init__(self, host, user, pwd, db):

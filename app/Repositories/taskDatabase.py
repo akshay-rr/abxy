@@ -26,7 +26,7 @@ class TaskDatabase:
         return -1
 
 
-    def createNewUser(self, email, password):
+    def putNewUser(self, email, password):
         if not self.db.insert("INSERT INTO USERS(POINTS,EMAIL) VALUES(0,'%s')"%(email)):
         	return -1
         uid = self.getUserIDByEmail(email)
@@ -39,17 +39,47 @@ class TaskDatabase:
         	return -1
         return uid
 
-    def createNewTimeBonus(self, name, type, multiplier, upperbound, uid):
+    def putNewTimeBonus(self, name, type, multiplier, upperbound, uid):
         if not self.db.insert("INSERT INTO TIME_BONUS(NAME,TYPE,MULTIPLIER,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s,%s)"%(name,type,multiplier,upperbound,uid)):
         	return -1
         return 1
 
-    def createNewRepeatBonus(self, name, frequency, upperbound, uid):
+    def putNewRepeatBonus(self, name, frequency, upperbound, uid):
         if not self.db.insert("INSERT INTO REPEAT_BONUS(NAME,FREQUENCY,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s)"%(name,frequency,upperbound,uid)):
         	return -1
         return 1
 
-    def createNewFocusBonus(self, name, type, lowerbound, distraction_penalty, uid):
+    def putNewFocusBonus(self, name, type, lowerbound, distraction_penalty, uid):
         if not self.db.insert("INSERT INTO FOCUS_BONUS(NAME,TYPE,LOWER_BOUND,DISTRACTION_PENALTY,UID) VALUES('%s','%s',%s,%s,%s)"%(name,type,lowerbound,distraction_penalty,uid)):
         	return -1
         return 1
+
+    def getBonusesByUID(self, uid):
+        time_bonuses = self.db.select("SELECT * FROM TIME_BONUS WHERE UID=%s"%(uid))
+        repeat_bonuses = self.db.select("SELECT * FROM REPEAT_BONUS WHERE UID=%s"%(uid))
+        focus_bonuses = self.db.select("SELECT * FROM FOCUS_BONUS WHERE UID=%s"%(uid))
+        results={
+            "time_bonus_list": time_bonuses,
+            "repeat_bonus_list": repeat_bonuses,
+            "focus_bonus_list": focus_bonuses
+        }
+        return results
+
+    def getTimeBonusByIDandUID(self,tid, uid):
+        time_bonus = self.db.select("SELECT * FROM TIME_BONUS WHERE ID=%s and UID=%s"%(tid, uid), fetchall=0)
+        return time_bonus
+
+    def getRepeatBonusByIDandUID(self,tid, uid):
+        repeat_bonus = self.db.select("SELECT * FROM REPEAT_BONUS WHERE ID=%s and UID=%s"%(tid, uid), fetchall=0)
+        return repeat_bonus
+
+    def getFocusBonusByIDandUID(self,tid, uid):
+        focus_bonus = self.db.select("SELECT * FROM FOCUS_BONUS WHERE ID=%s and UID=%s"%(tid, uid), fetchall=0)
+        return focus_bonus
+
+    def putNewTask(self, uid, name, description, tags, type, base_score, target_time, time_bonus, repeat_bonus, focus_bonus):
+        t = str(datetime.now())
+        result = self.db.insert("INSERT INTO TASKS VALUES (NULL, '%s', %s, '%s', '%s', '%s', '%s', %s, %s, %s, %s, %s)"%(t, uid, name, description, tags, type, base_score, target_time, time_bonus, repeat_bonus, focus_bonus))
+        if result:
+            return 1
+        return -1

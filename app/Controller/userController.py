@@ -8,7 +8,7 @@ class UserController:
 		if self.taskDatabase.getUserIDByEmail(email)!=-1:
 			# the user already exists!
 			return -1
-		return self.taskDatabase.createNewUser(email,pwd)
+		return self.taskDatabase.putNewUser(email,pwd)
 
 	def loginUser(self,email,pwd):
 		uid = self.taskDatabase.getUserIDByEmail(email)
