@@ -23,7 +23,7 @@ class TaskDatabase:
 
 	def getUserIDByEmail(self, email):
 		result = self.db.select(
-			"SELECT ID FROM USERS WHERE EMAIL = '%s'" % (email), fetchall=0)
+			"SELECT ID FROM USERS WHERE EMAIL = '%s'" % email, fetchall=0)
 		if result:
 			return result[0]
 		else:
@@ -31,7 +31,7 @@ class TaskDatabase:
 
 	def getUserPasswordByID(self, uid):
 		result = self.db.select(
-			"SELECT PASSWORD FROM ACCOUNTS WHERE UID = %s" % (uid), fetchall=0)
+			"SELECT PASSWORD FROM ACCOUNTS WHERE UID = %s" % uid, fetchall=0)
 		if result:
 			return result[0]
 		else:
@@ -39,13 +39,13 @@ class TaskDatabase:
 
 	def getUserByID(self, uid):
 		result = self.db.select(
-			"SELECT * FROM USERS WHERE ID=%s" % (uid), fetchall=0)
+			"SELECT * FROM USERS WHERE ID=%s" % uid, fetchall=0)
 		if result:
 			return result[0]
 		return -1
 
 	def putNewUser(self, user):
-		if not self.db.insert("INSERT INTO USERS(POINTS,EMAIL) VALUES(0,'%s')" % (user.email)):
+		if not self.db.insert("INSERT INTO USERS(POINTS,EMAIL) VALUES(0,'%s')" % user.email):
 			return -1
 		uid = self.getUserIDByEmail(user.email)
 		try:
@@ -75,11 +75,11 @@ class TaskDatabase:
 
 	def getBonusesByUID(self, uid):
 		time_bonuses = self.db.select(
-			"SELECT * FROM TIME_BONUS WHERE UID=%s" % (uid))
+			"SELECT * FROM TIME_BONUS WHERE UID=%s" % uid)
 		repeat_bonuses = self.db.select(
-			"SELECT * FROM REPEAT_BONUS WHERE UID=%s" % (uid))
+			"SELECT * FROM REPEAT_BONUS WHERE UID=%s" % uid)
 		focus_bonuses = self.db.select(
-			"SELECT * FROM FOCUS_BONUS WHERE UID=%s" % (uid))
+			"SELECT * FROM FOCUS_BONUS WHERE UID=%s" % uid)
 		results = {
 			"time_bonus_list": [self.getTimeBonusFromTuple(bonus).__dict__ for bonus in time_bonuses],
 			"repeat_bonus_list": [self.getRepeatBonusFromTuple(bonus).__dict__ for bonus in repeat_bonuses],
@@ -118,7 +118,7 @@ class TaskDatabase:
 
 	def getTaskByID(self, tid):
 		result = self.db.select(
-			"SELECT * FROM TASKS WHERE ID=%s" % (tid), fetchall=0)
+			"SELECT * FROM TASKS WHERE ID=%s" % tid, fetchall=0)
 		if result:
 			taskObj = self.getTaskFromTuple(result)
 		else:
