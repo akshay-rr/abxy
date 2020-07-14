@@ -9,7 +9,11 @@ class TaskDatabase:
 
 	@staticmethod
 	def getTaskFromTuple(tpl: tuple):
-		return Task(tpl[2], tpl[3], tpl[4], tpl[5], tpl[6], tpl[7], tpl[8], tpl[9], tpl[10], tpl[11], tpl[0])
+		return Task(tpl[2], tpl[3], tpl[4], tpl[5], tpl[6], tpl[7], tpl[8], tpl[9], tpl[10], tpl[11], tpl[0], tpl[1])
+
+	@staticmethod
+	def getTaskLogEntryFromTuple(tpl: tuple):
+		return TaskLogEntry(tpl[2], tpl[3], tpl[4], tpl[5], tpl[7], tpl[6], tpl[8], tpl[0])
 
 	@staticmethod
 	def getTimeBonusFromTuple(tpl: tuple):
@@ -63,17 +67,23 @@ class TaskDatabase:
 		return uid
 
 	def putNewTimeBonus(self, timeBonus: TimeBonus):
-		if not self.db.insert("INSERT INTO TIME_BONUS(NAME,TYPE,MULTIPLIER,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s,%s)" % (timeBonus.name, timeBonus.type, timeBonus.multiplier, timeBonus.upper_bound, timeBonus.uid)):
+		if not self.db.insert(
+				"INSERT INTO TIME_BONUS(NAME,TYPE,MULTIPLIER,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s,%s)" % (
+						timeBonus.name, timeBonus.type, timeBonus.multiplier, timeBonus.upper_bound, timeBonus.uid)):
 			return -1
 		return 1
 
 	def putNewRepeatBonus(self, repeatBonus: RepeatBonus):
-		if not self.db.insert("INSERT INTO REPEAT_BONUS(NAME,FREQUENCY,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s)" % (repeatBonus.name, repeatBonus.frequency, repeatBonus.upper_bound, repeatBonus.uid)):
+		if not self.db.insert("INSERT INTO REPEAT_BONUS(NAME,FREQUENCY,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s)" % (
+				repeatBonus.name, repeatBonus.frequency, repeatBonus.upper_bound, repeatBonus.uid)):
 			return -1
 		return 1
 
 	def putNewFocusBonus(self, focusBonus: FocusBonus):
-		if not self.db.insert("INSERT INTO FOCUS_BONUS(NAME,TYPE,LOWER_BOUND,DISTRACTION_PENALTY,UID) VALUES('%s','%s',%s,%s,%s)" % (focusBonus.name, focusBonus.type, focusBonus.lower_bound, focusBonus.distraction_penalty, focusBonus.uid)):
+		if not self.db.insert(
+				"INSERT INTO FOCUS_BONUS(NAME,TYPE,LOWER_BOUND,DISTRACTION_PENALTY,UID) VALUES('%s','%s',%s,%s,%s)" % (
+						focusBonus.name, focusBonus.type, focusBonus.lower_bound, focusBonus.distraction_penalty,
+						focusBonus.uid)):
 			return -1
 		return 1
 
@@ -114,8 +124,10 @@ class TaskDatabase:
 
 	def putNewTask(self, task: Task):
 		t = str(datetime.now())
-		result = self.db.insert("INSERT INTO TASKS VALUES (NULL, '%s', %s, '%s', '%s', '%s', '%s', %s, %s, %s, %s, %s)" % (
-			t, task.uid, task.name, task.description, task.tags, task.task_type, task.base_score, task.target_time, task.time_bonus_id, task.repeat_bonus_id, task.focus_bonus_id))
+		result = self.db.insert(
+			"INSERT INTO TASKS VALUES (NULL, '%s', %s, '%s', '%s', '%s', '%s', %s, %s, %s, %s, %s)" % (
+				t, task.uid, task.name, task.description, task.tags, task.task_type, task.base_score, task.target_time,
+				task.time_bonus_id, task.repeat_bonus_id, task.focus_bonus_id))
 		if result:
 			return 1
 		return -1
@@ -128,3 +140,18 @@ class TaskDatabase:
 		else:
 			taskObj = None
 		return taskObj
+
+	def getLatestLogEntryByUIDAndTID(self, uid: int, tid: int) -> TaskLogEntry:
+		result = self.db.select("SELECT * FROM TASK_LOG WHERE UID=%s AND TID=%s ORDER BY T DESC LIMIT 1)" % (uid, tid), fetchall=0)
+		if result:
+			logEntry = self.getTaskLogEntryFromTuple(result)
+		else:
+			logEntry = None
+		return logEntry
+
+	def putNewLogEntry(self, taskLogEntry: TaskLogEntry):
+		t = str(datetime.now())
+		result = self.db.insert("INSERT INTO TASK_LOG VALUES (NULL, '%s', %s, %s, %s, %s, %s, '%s', %s)" % (t,taskLogEntry.uid, taskLogEntry.tid, taskLogEntry.duration, taskLogEntry.focus, taskLogEntry.repetition, taskLogEntry.remarks, taskLogEntry.score))
+		if result:
+			return 1
+		return -1

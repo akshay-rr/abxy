@@ -11,11 +11,12 @@ class RewardsController:
     def calculateTimeBonus(self, taskEntry: TaskLogEntry, taskObj: Task) -> object:
         if taskObj:
             timeBonusObject = self.taskDatabase.getTimeBonusByIDandUID(taskObj.time_bonus_id, taskEntry.uid)
-            # Calculation
             ans = 0
-            if timeBonusObject.type == "DIMINISHING":
-                ans = timeBonusObject.upper_bound * (2.0 / math.pi) * math.atan(
+            if timeBonusObject.tb_type == "DIMINISHING":
+                ans = timeBonusObject.upper_bound * math.tanh(
                     (taskEntry.duration / taskObj.target_time) - 1)
+            elif timeBonusObject.tb_type == "ADDITIVE":
+                ans = timeBonusObject.multiplier * (taskEntry.duration-taskObj.target_time)
             return ans
         return None
 
@@ -23,8 +24,7 @@ class RewardsController:
         if taskObj:
             repeatBonusObject = self.taskDatabase.getRepeatBonusByIDandUID(
                 taskObj.repeat_bonus_id, taskEntry.uid)
-            # Calculation
-            ans = 0
+            ans = repeatBonusObject.upper_bound * math.tanh(taskEntry.repetition/10)
             return ans
         return None
 
@@ -32,8 +32,10 @@ class RewardsController:
         if taskObj:
             focusBonusObject = self.taskDatabase.getFocusBonusByIDandUID(
                 taskObj.focus_bonus_id, taskEntry.uid)
-            # Calculation
-            ans = 0
+            if focusBonusObject.fb_type == "ADDITIVE":
+                ans = focusBonusObject.distraction_penalty*(taskEntry.focus-5)
+            # elif focusBonusObject.fb_type == "MULTIPLICATIVE":
+            #                     TODO
             return ans
         return None
 
