@@ -1,8 +1,12 @@
+from Entities.entities import *
+from Repositories.taskDatabase import TaskDatabase
+
+
 class TaskController:
-	def __init__(self, tdb):
+	def __init__(self, tdb: TaskDatabase):
 		self.taskDatabase = tdb
 
-	def createTask(self, task):
+	def createTask(self, task: Task):
 		if self.taskDatabase.getUserByID(task.uid):
 			if self.taskDatabase.getTimeBonusByIDandUID(task.time_bonus_id, task.uid) and self.taskDatabase.getRepeatBonusByIDandUID(task.repeat_bonus_id, task.uid) and self.taskDatabase.getFocusBonusByIDandUID(task.focus_bonus_id, task.uid):
 				return self.taskDatabase.putNewTask(task)

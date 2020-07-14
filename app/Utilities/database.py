@@ -1,15 +1,14 @@
 import mysql.connector
-from datetime import datetime
-
 ##############################################################################
 # Import Instructions
 #
 # from database import DB
 ##############################################################################
-
-
 # TODO
 # Return Dictionary results. NO TUPLE!!!!
+##############################################################################
+
+
 class DB:
 
     def __init__(self, host, user, pwd, db):
@@ -29,7 +28,7 @@ class DB:
             cur=self.mydb.cursor()
 
         cur.execute(query)
-        if fetchall==1:
+        if fetchall == 1:
             vals = cur.fetchall()
         else:
             vals = cur.fetchone()
@@ -42,7 +41,7 @@ class DB:
             cur = self.mydb.cursor()
         except:
             self.mydb.reconnect()
-            cur=self.mydb.cursor()
+            cur = self.mydb.cursor()
 
         try:
             cur.execute(query)
