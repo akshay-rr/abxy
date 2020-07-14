@@ -26,7 +26,7 @@ class Task:
 
 
 class TaskLogEntry:
-    def __init__(self, uid, tid, duration, focus, remarks, repetition=-1, score=None, idn=-1, t=str(datetime.now())):
+    def __init__(self, uid, tid, duration, focus, remarks, repetition=-1, score=None, idn=-1, t=datetime.now()):
         self.uid = uid
         self.tid = tid
         self.duration = duration
@@ -35,7 +35,7 @@ class TaskLogEntry:
         self.remarks = remarks
         self.score = score
         self.idn = idn
-        self.timestamp = datetime.strptime(t, '%y-%m-%d %H:%M:%S')
+        self.timestamp = t
 
 
 class TimeBonus:

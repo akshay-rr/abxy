@@ -1,9 +1,10 @@
 from flask import *
-from Entities.entities import User, Task, TimeBonus, RepeatBonus, FocusBonus
+from Entities.entities import *
 from Controller.userController import UserController
 from Controller.bonusController import BonusController
 from Controller.taskController import TaskController
 from Controller.taskLogController import TaskLogController
+from Controller.rewardsController import RewardsController
 from Repositories.taskDatabase import TaskDatabase
 
 application = app = Flask(__name__)
@@ -15,7 +16,8 @@ tdb = TaskDatabase('aa1g61rixhyool1.cbvzqizsnmrt.us-east-1.rds.amazonaws.com',
 user_ctrl = UserController(tdb)
 bonus_ctrl = BonusController(tdb)
 task_ctrl = TaskController(tdb)
-
+rewards_ctrl = RewardsController(tdb)
+task_log_ctrl = TaskLogController(tdb, rewards_ctrl)
 ###############################################################################
 # USER ACTIONS
 ###############################################################################
@@ -65,11 +67,12 @@ def createTaskRequest():
 def logTaskRequest():
     uid = request.form['uid']
     tid = request.form['tid']
-    duration = request.form['duration']
-    focus = request.form['focus']
+    duration = int(request.form['duration'])
+    focus = int(request.form['focus'])
     remarks = request.form['remarks']
+    task_log_object = TaskLogEntry(uid, tid, duration, focus, remarks)
     if uid and tid and focus:
-        return task_ctrl.logTask(uid, tid, duration, focus, remarks)
+        return str(task_log_ctrl.logTask(task_log_object))
     return "Invalid Request"
 
 

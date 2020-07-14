@@ -12,6 +12,8 @@ class RewardsController:
         if taskObj:
             timeBonusObject = self.taskDatabase.getTimeBonusByIDandUID(taskObj.time_bonus_id, taskEntry.uid)
             ans = 0
+            print(taskEntry.duration)
+            print(type(taskEntry.duration))
             if timeBonusObject.tb_type == "DIMINISHING":
                 ans = timeBonusObject.upper_bound * math.tanh(
                     (taskEntry.duration / taskObj.target_time) - 1)
@@ -40,7 +42,7 @@ class RewardsController:
         return None
 
     def calculateScore(self, taskEntry: TaskLogEntry) -> int:
-        taskObj = self.taskDatabase.getTaskById(taskEntry.tid)
+        taskObj = self.taskDatabase.getTaskByID(taskEntry.tid)
         baseScoreVal = taskObj.base_score
         timeBonusVal = self.calculateTimeBonus(taskEntry, taskObj)
         repeatBonusVal = self.calculateRepeatBonus(taskEntry, taskObj)

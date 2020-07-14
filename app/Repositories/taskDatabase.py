@@ -134,7 +134,7 @@ class TaskDatabase:
 		return taskObj
 
 	def getLatestLogEntryByUIDAndTID(self, uid: int, tid: int) -> TaskLogEntry:
-		result = self.db.select("SELECT * FROM TASK_LOG WHERE UID=%s AND TID=%s ORDER BY T DESC LIMIT 1)" % (uid, tid), fetchall=0)
+		result = self.db.select("SELECT * FROM TASK_LOG WHERE UID=%s AND TID=%s ORDER BY T DESC LIMIT 1" % (uid, tid), fetchall=0)
 		if result:
 			logEntry = self.getTaskLogEntryFromTuple(result)
 		else:
