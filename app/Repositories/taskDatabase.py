@@ -8,28 +8,28 @@ class TaskDatabase:
 		self.db = DB(host, user, pwd, db)
 
 	@staticmethod
-	def getTaskFromTuple(tpl: tuple):
-		return Task(tpl[2], tpl[3], tpl[4], tpl[5], tpl[6], tpl[7], tpl[8], tpl[9], tpl[10], tpl[11], tpl[0], tpl[1])
+	def getTaskFromTuple(tpl: tuple) -> Task:
+		return Task(tpl[2], tpl[3], tpl[4], tpl[5], tpl[6], tpl[7], tpl[8], tpl[9], tpl[10], tpl[11], tpl[0])
 
 	@staticmethod
 	def getTaskLogEntryFromTuple(tpl: tuple):
-		return TaskLogEntry(tpl[2], tpl[3], tpl[4], tpl[5], tpl[7], tpl[6], tpl[8], tpl[0])
+		return TaskLogEntry(tpl[2], tpl[3], tpl[4], tpl[5], tpl[7], tpl[6], tpl[8], tpl[0], tpl[1])
 
 	@staticmethod
-	def getTimeBonusFromTuple(tpl: tuple):
+	def getTimeBonusFromTuple(tpl: tuple) -> TimeBonus:
 		return TimeBonus(tpl[1], tpl[2], tpl[3], tpl[4], tpl[5], tpl[0])
 
 	@staticmethod
-	def getRepeatBonusFromTuple(tpl: tuple):
+	def getRepeatBonusFromTuple(tpl: tuple) -> RepeatBonus:
 		return RepeatBonus(tpl[1], tpl[2], tpl[3], tpl[4], tpl[0])
 
 	@staticmethod
-	def getFocusBonusFromTuple(tpl: tuple):
+	def getFocusBonusFromTuple(tpl: tuple) -> FocusBonus:
 		return FocusBonus(tpl[1], tpl[2], tpl[3], tpl[4], tpl[5], tpl[0])
 
 	# def getUserFromTuple(self, tpl):
 
-	def getUserIDByEmail(self, email: str):
+	def getUserIDByEmail(self, email: str) -> int:
 		result = self.db.select(
 			"SELECT ID FROM USERS WHERE EMAIL = '%s'" % email, fetchall=0)
 		if result:
@@ -37,7 +37,7 @@ class TaskDatabase:
 		else:
 			return -1
 
-	def getUserPasswordByID(self, uid: int):
+	def getUserPasswordByID(self, uid: int) -> int:
 		result = self.db.select(
 			"SELECT PASSWORD FROM ACCOUNTS WHERE UID = %s" % uid, fetchall=0)
 		if result:
@@ -45,14 +45,14 @@ class TaskDatabase:
 		else:
 			return -1
 
-	def getUserByID(self, uid: int):
+	def getUserByID(self, uid: int) -> int:
 		result = self.db.select(
 			"SELECT * FROM USERS WHERE ID=%s" % uid, fetchall=0)
 		if result:
 			return result[0]
 		return -1
 
-	def putNewUser(self, user: User):
+	def putNewUser(self, user: User) -> int:
 		if not self.db.insert("INSERT INTO USERS(POINTS,EMAIL) VALUES(0,'%s')" % user.email):
 			return -1
 		uid = self.getUserIDByEmail(user.email)
@@ -66,28 +66,22 @@ class TaskDatabase:
 			return -1
 		return uid
 
-	def putNewTimeBonus(self, timeBonus: TimeBonus):
-		if not self.db.insert(
-				"INSERT INTO TIME_BONUS(NAME,TYPE,MULTIPLIER,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s,%s)" % (
-						timeBonus.name, timeBonus.type, timeBonus.multiplier, timeBonus.upper_bound, timeBonus.uid)):
+	def putNewTimeBonus(self, timeBonus: TimeBonus) -> int:
+		if not self.db.insert("INSERT INTO TIME_BONUS(NAME,TYPE,MULTIPLIER,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s,%s)" % (timeBonus.name, timeBonus.type, timeBonus.multiplier, timeBonus.upper_bound, timeBonus.uid)):
 			return -1
 		return 1
 
-	def putNewRepeatBonus(self, repeatBonus: RepeatBonus):
-		if not self.db.insert("INSERT INTO REPEAT_BONUS(NAME,FREQUENCY,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s)" % (
-				repeatBonus.name, repeatBonus.frequency, repeatBonus.upper_bound, repeatBonus.uid)):
+	def putNewRepeatBonus(self, repeatBonus: RepeatBonus) -> int:
+		if not self.db.insert("INSERT INTO REPEAT_BONUS(NAME,FREQUENCY,UPPER_BOUND,UID) VALUES('%s','%s',%s,%s)" % (repeatBonus.name, repeatBonus.frequency, repeatBonus.upper_bound, repeatBonus.uid)):
 			return -1
 		return 1
 
-	def putNewFocusBonus(self, focusBonus: FocusBonus):
-		if not self.db.insert(
-				"INSERT INTO FOCUS_BONUS(NAME,TYPE,LOWER_BOUND,DISTRACTION_PENALTY,UID) VALUES('%s','%s',%s,%s,%s)" % (
-						focusBonus.name, focusBonus.type, focusBonus.lower_bound, focusBonus.distraction_penalty,
-						focusBonus.uid)):
+	def putNewFocusBonus(self, focusBonus: FocusBonus) -> int:
+		if not self.db.insert("INSERT INTO FOCUS_BONUS(NAME,TYPE,LOWER_BOUND,DISTRACTION_PENALTY,UID) VALUES('%s','%s',%s,%s,%s)" % (focusBonus.name, focusBonus.type, focusBonus.lower_bound, focusBonus.distraction_penalty, focusBonus.uid)):
 			return -1
 		return 1
 
-	def getBonusesByUID(self, uid: int):
+	def getBonusesByUID(self, uid: int) -> dict:
 		time_bonuses = self.db.select(
 			"SELECT * FROM TIME_BONUS WHERE UID=%s" % uid)
 		repeat_bonuses = self.db.select(
@@ -101,38 +95,36 @@ class TaskDatabase:
 		}
 		return results
 
-	def getTimeBonusByIDandUID(self, tbid: int, uid: int):
+	def getTimeBonusByIDandUID(self, tbid: int, uid: int) -> TimeBonus:
 		time_bonus = self.db.select(
 			"SELECT * FROM TIME_BONUS WHERE ID=%s and UID=%s" % (tbid, uid), fetchall=0)
 		if time_bonus:
 			return self.getTimeBonusFromTuple(time_bonus)
 		return None
 
-	def getRepeatBonusByIDandUID(self, rbid: int, uid: int):
+	def getRepeatBonusByIDandUID(self, rbid: int, uid: int) -> RepeatBonus:
 		repeat_bonus = self.db.select(
 			"SELECT * FROM REPEAT_BONUS WHERE ID=%s and UID=%s" % (rbid, uid), fetchall=0)
 		if repeat_bonus:
 			return self.getRepeatBonusFromTuple(repeat_bonus)
 		return None
 
-	def getFocusBonusByIDandUID(self, fbid: int, uid: int):
+	def getFocusBonusByIDandUID(self, fbid: int, uid: int) -> FocusBonus:
 		focus_bonus = self.db.select(
 			"SELECT * FROM FOCUS_BONUS WHERE ID=%s and UID=%s" % (fbid, uid), fetchall=0)
 		if focus_bonus:
 			return self.getFocusBonusFromTuple(focus_bonus)
 		return None
 
-	def putNewTask(self, task: Task):
+	def putNewTask(self, task: Task) -> int:
 		t = str(datetime.now())
-		result = self.db.insert(
-			"INSERT INTO TASKS VALUES (NULL, '%s', %s, '%s', '%s', '%s', '%s', %s, %s, %s, %s, %s)" % (
-				t, task.uid, task.name, task.description, task.tags, task.task_type, task.base_score, task.target_time,
-				task.time_bonus_id, task.repeat_bonus_id, task.focus_bonus_id))
+		result = self.db.insert("INSERT INTO TASKS VALUES (NULL, '%s', %s, '%s', '%s', '%s', '%s', %s, %s, %s, %s, %s)" % (
+			t, task.uid, task.name, task.description, task.tags, task.task_type, task.base_score, task.target_time, task.time_bonus_id, task.repeat_bonus_id, task.focus_bonus_id))
 		if result:
 			return 1
 		return -1
 
-	def getTaskByID(self, tid: int):
+	def getTaskByID(self, tid: int) -> Task:
 		result = self.db.select(
 			"SELECT * FROM TASKS WHERE ID=%s" % tid, fetchall=0)
 		if result:

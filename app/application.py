@@ -3,6 +3,7 @@ from Entities.entities import User, Task, TimeBonus, RepeatBonus, FocusBonus
 from Controller.userController import UserController
 from Controller.bonusController import BonusController
 from Controller.taskController import TaskController
+from Controller.taskLogController import TaskLogController
 from Repositories.taskDatabase import TaskDatabase
 
 application = app = Flask(__name__)
@@ -46,16 +47,16 @@ def createTaskRequest():
     name = request.form['name']
     desc = request.form['description']
     tags = request.form['tags']
-    type = request.form['type']
+    task_type = request.form['task_type']
     base_score = request.form['base_score']
     target_time = request.form['target_time']
     time_bonus_id = request.form['time_bonus_id']
     repeat_bonus_id = request.form['repeat_bonus_id']
     focus_bonus_id = request.form['focus_bonus_id']
-    task_object = Task(uid, name, desc, tags, type, base_score,
+    task_object = Task(uid, name, desc, tags, taks_type, base_score,
                        target_time, time_bonus_id, repeat_bonus_id, focus_bonus_id)
     if name and desc and base_score and time_bonus_id and focus_bonus_id and repeat_bonus_id:
-        if target_time or ((not target_time) and type == 'EVENT'):
+        if target_time or ((not target_time) and task_type == 'EVENT'):
             return str(task_ctrl.createTask(task_object))
     return "Invalid Request"
 
@@ -104,14 +105,14 @@ def logNegTaskRequest():
 def createTimeBonusRequest():
     uid = request.form['uid']
     name = request.form['name']
-    type = request.form['type']
+    tb_type = request.form['type']
     multiplier = request.form['multiplier']
     upper_bound = request.form['upper_bound']
-    if uid and upper_bound and type == 'LOGARITHMIC':
-        time_bonus_object = TimeBonus(name, type, multiplier, upper_bound, uid)
+    if uid and upper_bound and tb_type == 'LOGARITHMIC':
+        time_bonus_object = TimeBonus(name, tb_type, multiplier, upper_bound, uid)
         return str(bonus_ctrl.createTimeBonus(time_bonus_object))
-    if uid and multiplier and type == "ADDITIVE":
-        time_bonus_object = TimeBonus(name, type, multiplier, upper_bound, uid)
+    if uid and multiplier and tb_type == "ADDITIVE":
+        time_bonus_object = TimeBonus(name, tb_type, multiplier, upper_bound, uid)
         return str(bonus_ctrl.createTimeBonus(time_bonus_object))
     return "Invalid Request"
 
@@ -132,18 +133,18 @@ def createRepeatBonusRequest():
 def createFocusBonusRequest():
     uid = request.form['uid']
     name = request.form['name']
-    type = request.form['type']
+    fb_type = request.form['type']
     lower_bound = request.form['lower_bound']
     distraction_penalty = request.form['distraction_penalty']
 
-    if uid and name and lower_bound and type == 'MULTIPLICATIVE':
+    if uid and name and lower_bound and fb_type == 'MULTIPLICATIVE':
         focus_bonus_object = FocusBonus(
-            name, type, lower_bound, distraction_penalty, uid)
+            name, fb_type, lower_bound, distraction_penalty, uid)
         return str(bonus_ctrl.createFocusBonus(focus_bonus_object))
 
-    if uid and name and distraction_penalty and type == 'ADDITIVE':
+    if uid and name and distraction_penalty and fb_type == 'ADDITIVE':
         focus_bonus_object = FocusBonus(
-            name, type, lower_bound, distraction_penalty, uid)
+            name, fb_type, lower_bound, distraction_penalty, uid)
         return str(bonus_ctrl.createFocusBonus(focus_bonus_object))
     return "Invalid Request"
 
@@ -160,7 +161,6 @@ def createTimePenRequest():
         return bonus_ctrl.createTimePen(name, type, multiplier, upper_bound, uid)
     if uid and multiplier and type == "ADDITIVE":
         return bonus_ctrl.createTimePen(name, type, multiplier, upper_bound, uid)
-
     return "Invalid Request"
 
 
