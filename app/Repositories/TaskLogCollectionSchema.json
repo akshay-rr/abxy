@@ -1,16 +1,16 @@
 {
   "bsonType": "object",
-  "required": ["task_instance_id","uid", "task_id", "timestamp", "bonus_instances","remarks", "score"],
+  "required": ["_id","uid", "task_id", "timestamp", "bonus_instances","remarks", "score"],
   "additionalProperties": false,
   "properties": {
-    "task_instance_id": {
-      "bsonType": "int"
+    "_id": {
+      "bsonType": "objectId"
     },
     "uid": {
-      "bsonType": "int"
+      "bsonType": "objectId"
     },
     "task_id":{
-      "bsonType": "int"
+      "bsonType": "objectId"
     },
     "timestamp": {
       "bsonType": "date"
@@ -29,7 +29,7 @@
         "additionalProperties": false,
         "properties": {
           "bonus_id": {
-            "bsonType": "int"
+            "bsonType": "objectId"
           },
           "input_quantity": {
             "bsonType": "double"
