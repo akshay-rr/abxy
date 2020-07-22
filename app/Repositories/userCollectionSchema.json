@@ -1,6 +1,6 @@
 {
   "bsonType": "object",
-  "required": ["uid","name","email","google_id","tasks"],
+  "required": ["_id","name","email","google_id","score","tasks"],
   "additionalProperties": false,
   "properties": {
     "_id": {
@@ -15,11 +15,14 @@
     "google_id": {
       "bsonType":"string"
     },
+    "score": {
+      "bsonType":"int"
+    },
     "tasks": {
       "bsonType": "array",
       "items": {
         "bsonType": "object",
-        "required": ["id","name","base_points","category","bonuses", "created_on", "last_done_on","description"],
+        "required": ["_id","name","description","base_score","category","bonuses", "created_on", "last_done_on"],
         "properties": {
           "_id": {
             "bsonType": "objectId"
@@ -36,7 +39,7 @@
           "description": {
             "bsonType": "string"
           },
-          "base_points": {
+          "base_score": {
             "bsonType": "int"
           },
           "category": {
@@ -46,13 +49,13 @@
             "bsonType": "array",
             "items": {
               "bsonType": "object",
-              "required": ["_id","bonus_type","bonus_name","input_label","upper_bound","lower_bound", "evaluation_type","constants", "created_on"],
+              "required": ["_id","data_source","bonus_name","input_label","upper_bound","lower_bound", "evaluation_type","constants", "created_on"],
               "additionalProperties": false,
               "properties": {
                 "_id": {
                   "bsonType": "objectId"
                 },
-                "bonus_type": {
+                "data_source": {
                   "bsonType": "string"
                 },
                 "bonus_name": {

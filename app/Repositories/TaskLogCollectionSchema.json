@@ -1,6 +1,6 @@
 {
   "bsonType": "object",
-  "required": ["_id","uid", "task_id", "timestamp", "bonus_instances","remarks", "score"],
+  "required": ["_id", "uid", "task_id", "timestamp", "bonus_instances","remarks", "score"],
   "additionalProperties": false,
   "properties": {
     "_id": {

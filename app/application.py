@@ -21,7 +21,11 @@ task_log_ctrl = TaskLogController(tdb, rewards_ctrl)
 ###############################################################################
 # USER ACTIONS
 ###############################################################################
-
+#signInUserRequest(accessToken, name, email, google_id) -> (check if user already exists),
+#createTaskRequest(accessToken,name,description,base_points,category,tags)
+#createBonusRequest(accessToken,task_id,bonus_type,bonus_name,input_label,upper_bound,lower_bound,evaluation_type,constants)
+#logTaskRequest(accessToken,task_id,bonus_instances,remarks)
+#accessToken proxies for UID
 
 @application.route('/API/createUserRequest/', methods=['POST'])
 def createUserRequest():
