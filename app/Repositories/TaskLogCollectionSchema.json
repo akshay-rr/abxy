@@ -1,0 +1,44 @@
+{
+  "bsonType": "object",
+  "required": ["task_instance_id","uid", "task_id", "timestamp", "bonus_instances","remarks", "score"],
+  "additionalProperties": false,
+  "properties": {
+    "task_instance_id": {
+      "bsonType": "int"
+    },
+    "uid": {
+      "bsonType": "int"
+    },
+    "task_id":{
+      "bsonType": "int"
+    },
+    "timestamp": {
+      "bsonType": "date"
+    },
+    "remarks": {
+      "bsonType": "string"
+    },
+    "score": {
+      "bsonType": "int"
+    },
+    "bonus_instances": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "required": ["bonus_id", "input_quantity","score_addition"],
+        "additionalProperties": false,
+        "properties": {
+          "bonus_id": {
+            "bsonType": "int"
+          },
+          "input_quantity": {
+            "bsonType": "double"
+          },
+          "score_addition": {
+            "bsonType": "int"
+          }
+        }
+      }
+    }
+  }
+}
