@@ -24,7 +24,7 @@ user_ctrl = UserController(tdb)
 # logTaskRequest(accessToken,task_id,bonus_instances,remarks)
 # accessToken proxies for UID
 
-def verifyNecessaryKeys(myMap: dict, necessaryKeys: list) -> bool:
+def verifyNecessaryRequestKeys(myMap: dict, necessaryKeys: list) -> bool:
 	for key in necessaryKeys:
 		try:
 			myMap[key]
@@ -33,9 +33,9 @@ def verifyNecessaryKeys(myMap: dict, necessaryKeys: list) -> bool:
 	return True
 
 
-def getUsableKeys(myMap: dict, usableKeys: list) -> dict:
+def extractRequiredKeys(myMap: dict, required: list) -> dict:
 	newMap = {}
-	for key in usableKeys:
+	for key in required:
 		newMap[key] = myMap[key]
 	return newMap
 
@@ -44,11 +44,11 @@ def getUsableKeys(myMap: dict, usableKeys: list) -> dict:
 @application.route('/API/signInUserRequest/', methods=['POST'])
 def signInUserRequest():
 	necessaryKeys = ["access_token", "name", "email", "google_id"]
-	optionalKeys = []
+	objectKeys = ["name", "email", "google_id"]
 
-	if not verifyNecessaryKeys(request.form, necessaryKeys):
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return "Invalid Request: Items Missing"
-	processedRequest = getUsableKeys(request.form, necessaryKeys + optionalKeys)
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
 	asd = user_ctrl.signInUser(processedRequest)
 	print("HI")
