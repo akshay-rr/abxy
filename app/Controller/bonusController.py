@@ -1,31 +1,23 @@
-# from Entities.entities import *
-# from Repositories.taskDatabase import TaskDatabase
-#
-#
-# class BonusController:
-# 	def __init__(self, tdb: TaskDatabase):
-# 		self.taskDatabase = tdb
-#
-# 	def createTimeBonus(self, timeBonus: TimeBonus) -> int:
-# 		if self.taskDatabase.getUserByID(timeBonus.uid) != -1:
-# 			return self.taskDatabase.putNewTimeBonus(timeBonus)
-# 		print('User not found')
-# 		return -1
-#
-# 	def createRepeatBonus(self, repeatBonus: RepeatBonus) -> int:
-# 		if self.taskDatabase.getUserByID(repeatBonus.uid) != -1:
-# 			return self.taskDatabase.putNewRepeatBonus(repeatBonus)
-# 		print('User not found')
-# 		return -1
-#
-# 	def createFocusBonus(self, focusBonus: FocusBonus) -> int:
-# 		if self.taskDatabase.getUserByID(focusBonus.uid) != -1:
-# 			return self.taskDatabase.putNewFocusBonus(focusBonus)
-# 		print('User not found')
-# 		return -1
-#
-# 	def listBonusesByUID(self, uid: int) -> int:
-# 		if self.taskDatabase.getUserByID(uid) != -1:
-# 			return self.taskDatabase.getBonusesByUID(uid)
-# 		print('User not found')
-# 		return -1
+from datetime import datetime
+import bson
+
+from Repositories.taskDatabase import TaskDatabase
+
+
+class BonusController:
+	def __init__(self, tdb: TaskDatabase):
+		self.taskDatabase = tdb
+
+	def createBonus(self, bonusCreationRequest):
+		bonusObject = {}
+		uid = bonusCreationRequest['uid']
+		task_id = bonusCreationRequest['task_id']
+
+		bonusObjectKeysFromRequest = ["data_source", "bonus_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
+		for key in bonusObjectKeysFromRequest:
+			bonusObject[key] = bonusCreationRequest[key]
+
+		bonusObject['_id'] = bson.ObjectId()
+		bonusObject['created_on'] = datetime.now()
+
+		return self.taskDatabase.putNewBonus(uid, task_id, bonusObject)
