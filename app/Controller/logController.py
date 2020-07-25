@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import bson
 from Repositories.taskDatabase import TaskDatabase
 from Controller.bonusController import BonusController
 
@@ -19,8 +19,8 @@ class LogController:
 		# update user score
 		# add to log
 
-		uid = logRequest['uid']
-		task_id = logRequest['task_id']
+		uid = bson.ObjectId(logRequest['uid'])
+		task_id = bson.ObjectId(logRequest['task_id'])
 
 		# get the task from DB
 		task = self.taskDatabase.getTaskObjectByUserIDAndTaskID(uid, task_id)
@@ -59,19 +59,22 @@ class LogController:
 				return None
 			totalLogScoreAddition += bonusLog[i]['score_addition']
 
-		totalLogScore = task['base_score'] + totalLogScoreAddition
+		totalLogScore = int(task['base_score'] + totalLogScoreAddition)
 		timeNow = datetime.now()
 
 		# build taskLogObject
-		taskLog = {'uid': uid, 'task_id': task_id, 'timestamp': timeNow, 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore}
+		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': timeNow, 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore}
 
 		# update task last_done_on
 		if self.taskDatabase.setTaskLastDone(uid, task_id, timeNow) is None:
 			return None
 
+		print("REACHED HERE 1")
 		# update user object score
 		if self.taskDatabase.addToUserScore(uid, totalLogScore) is None:
 			return None
+
+		print("REACHED HERE 2")
 
 		# put Task Log in db
 		if self.taskDatabase.putNewLog(taskLog) is None:

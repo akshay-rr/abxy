@@ -20,15 +20,15 @@ class TaskDatabase:
 		return self.userCollection.find_one({"_id": userID})
 
 	def getTaskObjectByUserIDAndTaskID(self, userID: bson.ObjectId, taskID: bson.ObjectId):
-		user = self.userCollection.find_one({"_id": userID, "tasks._id": taskID})
+		user = self.userCollection.find_one({"_id": userID})
 		for task in user['tasks']:
-			if task['_id'] == taskID:
+			if str(task['_id']) == str(taskID):
 				return task
 		return None
 
 	def putNewUser(self, user):
 		result = self.userCollection.insert_one(user)
-		if result.matched_count > 0:
+		if result.inserted_id is not None:
 			return result.inserted_id
 		return None
 
@@ -46,11 +46,11 @@ class TaskDatabase:
 
 	def putNewLog(self, taskLog):
 		result = self.taskLogCollection.insert_one(taskLog)
-		if result.matched_count > 0:
+		if result.inserted_id is not None:
 			return result.inserted_id
 		return None
 
-	def setTaskLastDone(self, uid, task_id, time):
+	def setTaskLastDone(self, uid: bson.ObjectId, task_id: bson.ObjectId, time):
 		result = self.userCollection.update_one({"_id": uid, "tasks._id": task_id}, {"$set": {"tasks.$.last_done_on": time}})
 		if result.matched_count > 0:
 			return time
