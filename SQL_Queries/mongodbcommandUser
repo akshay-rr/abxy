@@ -101,5 +101,5 @@ db.createCollection("users", {
           }
         }
     },
-    validationAction:"warn"
+    validationAction:"error"
 })

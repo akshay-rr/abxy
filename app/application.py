@@ -2,6 +2,7 @@ from flask import *
 from Controller.userController import UserController
 from Controller.taskController import TaskController
 from Controller.bonusController import BonusController
+from Controller.logController import LogController
 from Repositories.taskDatabase import TaskDatabase
 from bson.json_util import dumps
 import bson
@@ -12,6 +13,7 @@ tdb = TaskDatabase("mongodb+srv://test_user0:riktXHrvxRuVkS6F@cluster0.heb4n.mon
 user_ctrl = UserController(tdb)
 task_ctrl = TaskController(tdb)
 bonus_ctrl = BonusController(tdb)
+log_ctrl = LogController(tdb,bonus_ctrl)
 
 
 # rewards_ctrl = RewardsController(tdb)
@@ -102,6 +104,25 @@ def createBonus():
 	processedRequest['uid'] = uid
 
 	result = bonus_ctrl.createBonus(processedRequest)
+	if result is None:
+		return "IT DIDN'T WORK"
+	return str(result)
+
+
+# logTaskRequest(access_token,task_id,bonus_instances,remarks) -> bonus_instances is an array of
+@application.route('/API/logTask/', methods=["POST"])
+def logTask():
+	necessaryKeys = ["access_token", "task_id", "bonus_instances", "remarks"]
+	objectKeys = ["task_id", "bonus_instances", "remarks"]
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return "Invalid Request: Items Missing"
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	uid = authenticateToken(request.form['access_token'])
+	processedRequest['uid'] = uid
+
+	result = log_ctrl.logTask(processedRequest)
 	if result is None:
 		return "IT DIDN'T WORK"
 	return str(result)

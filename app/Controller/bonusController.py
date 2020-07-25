@@ -1,3 +1,4 @@
+import math
 from datetime import datetime
 import bson
 
@@ -21,3 +22,20 @@ class BonusController:
 		bonusObject['created_on'] = datetime.now()
 
 		return self.taskDatabase.putNewBonus(uid, task_id, bonusObject)
+
+	def getDataQuantity(self, uid, task_id, bonus):
+		if bonus['data_source'] == "REPETITION":
+			# get the most recent taskLog with the same uid,tid
+			mostRecentLog = self.taskDatabase.getMostRecentLogByUserIDAndTaskID(uid, task_id)
+			for bonusInstance in mostRecentLog['bonus_instances']:
+				# check the input value for the same bonus
+				if bonusInstance['bonus_id'] == bonus['_id']:
+					return bonusInstance['input_quantity'] + 1
+		return None
+
+	def computeScoreAddition(self, bonus, data):
+		constants = bonus['constants']
+		if bonus['evaluation_type'] == "ADDITIVE":
+			return round(constants[0] * data)
+		elif bonus['evaluation_type'] == "SIGMOID":
+			return round(constants[0] * math.tanh(data / (constants[1] / 2)))
