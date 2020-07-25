@@ -19,6 +19,8 @@ class LogController:
 		# update user score
 		# add to log
 
+		print(logRequest['bonus_instances'])
+
 		uid = bson.ObjectId(logRequest['uid'])
 		task_id = bson.ObjectId(logRequest['task_id'])
 
@@ -44,7 +46,7 @@ class LogController:
 				# get from logRequest
 				for bonusDataInstance in logRequest['bonus_instances']:
 					if str(bonusDataInstance['bonus_id']) == str(bonuses[i]['_id']):
-						data = bonusDataInstance['data']
+						data = bonusDataInstance['input_quantity']
 						break
 			else:
 				data = self.bonusController.getDataQuantity(uid, task_id, bonuses[i])
@@ -53,8 +55,8 @@ class LogController:
 
 			# calculate score addition, build bonus array
 			bonusLog[i]['bonus_id'] = bonuses[i]['_id']
-			bonusLog[i]['input_quantity'] = data
-			bonusLog[i]['score_addition'] = self.bonusController.computeScoreAddition(bonuses[i], bonusLog[i]['input_quantity'])
+			bonusLog[i]['input_quantity'] = float(data)
+			bonusLog[i]['score_addition'] = int(self.bonusController.computeScoreAddition(bonuses[i], bonusLog[i]['input_quantity']))
 			if bonusLog[i]['score_addition'] is None:
 				return None
 			totalLogScoreAddition += bonusLog[i]['score_addition']
@@ -75,6 +77,7 @@ class LogController:
 			return None
 
 		print("REACHED HERE 2")
+		print(taskLog)
 
 		# put Task Log in db
 		if self.taskDatabase.putNewLog(taskLog) is None:

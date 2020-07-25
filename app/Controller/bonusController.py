@@ -30,7 +30,7 @@ class BonusController:
 			for bonusInstance in mostRecentLog['bonus_instances']:
 				# check the input value for the same bonus
 				if bonusInstance['bonus_id'] == bonus['_id']:
-					return bonusInstance['input_quantity'] + 1
+					return float(bonusInstance['input_quantity'] + 1)
 		return None
 
 	def computeScoreAddition(self, bonus, data):
