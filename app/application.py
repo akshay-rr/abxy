@@ -29,38 +29,7 @@ bonus_ctrl = BonusController(tdb)
 
 def authenticateToken(accessToken):
 	# TODO: auth
-	return bson.ObjectId('5f1adb931083a8b78f7f5ff2')
-
-
-def stringToFloatArray(string):
-	if string == "" or string == "[]":
-		return []
-	if string[0] == '[':
-		string = string[1:-1]
-	if string[-1] == ']':
-		string = string[0:-2]
-
-	stringArr = string.split(",")
-	newArr = []
-	for elem in stringArr:
-		newArr.append(float(elem))
-	return newArr
-
-
-def stringToStringArray(string):
-	if string == "" or string == "[]":
-		return []
-
-	if string[0] == '[':
-		string = string[1:-1]
-	if string[-1] == ']':
-		string = string[0:-2]
-
-	stringArr = string.split(",")
-	newArr = []
-	for elem in stringArr:
-		newArr.append(elem.replace('"', '').replace("'", ""))
-	return newArr
+	return bson.ObjectId('5f1be0c2026d981bf3b703b2')
 
 
 def verifyNecessaryRequestKeys(myMap: dict, necessaryKeys: list) -> bool:
@@ -72,10 +41,18 @@ def verifyNecessaryRequestKeys(myMap: dict, necessaryKeys: list) -> bool:
 	return True
 
 
+keysToBeFloats = ["upper_bound", "lower_bound"]
+keysToBeFloatArrays = ["constants"]
+
+
 def extractRequiredKeys(myMap: dict, required: list) -> dict:
 	newMap = {}
 	for key in required:
-		newMap[key] = myMap[key]
+		newMap[key] = json.loads(myMap[key])
+		if key in keysToBeFloats:
+			newMap[key] = float(newMap[key])
+		if key in keysToBeFloatArrays:
+			newMap[key] = [float(x) for x in newMap[key]]
 	return newMap
 
 
@@ -100,9 +77,6 @@ def createTask():
 		return "Invalid Request: Items Missing"
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
-	processedRequest['base_score'] = int(processedRequest['base_score'])
-	processedRequest['tags'] = stringToStringArray(processedRequest['tags'])
-
 	uid = authenticateToken(request.form['access_token'])
 	processedRequest['uid'] = uid
 
@@ -122,9 +96,6 @@ def createBonus():
 		return "Invalid Request: Items Missing"
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
-	processedRequest['constants'] = stringToFloatArray(processedRequest['constants'])
-	processedRequest['upper_bound'] = float(processedRequest['upper_bound'])
-	processedRequest['lower_bound'] = float(processedRequest['lower_bound'])
 	processedRequest['task_id'] = bson.ObjectId(processedRequest['task_id'])
 
 	uid = authenticateToken(request.form['access_token'])
