@@ -39,7 +39,7 @@ class TaskDatabase:
 		return None
 
 	def putNewBonus(self, uid, task_id, bonus):
-		result = self.userCollection.update_one({"_id": uid, "tasks._id": task_id}, {"$push": {'tasks.$[].bonuses': bonus}})
+		result = self.userCollection.update_one({"_id": uid}, {"$push": {'tasks.$[xyz].bonuses': bonus}}, array_filters=[{"xyz._id": task_id}])
 		if result.matched_count > 0:
 			return bonus['_id']
 		return None
