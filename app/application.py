@@ -13,7 +13,7 @@ tdb = TaskDatabase("mongodb+srv://test_user0:riktXHrvxRuVkS6F@cluster0.heb4n.mon
 user_ctrl = UserController(tdb)
 task_ctrl = TaskController(tdb)
 bonus_ctrl = BonusController(tdb)
-log_ctrl = LogController(tdb,bonus_ctrl)
+log_ctrl = LogController(tdb, bonus_ctrl)
 
 
 # rewards_ctrl = RewardsController(tdb)
@@ -31,7 +31,7 @@ log_ctrl = LogController(tdb,bonus_ctrl)
 
 def authenticateToken(accessToken):
 	# TODO: auth
-	return bson.ObjectId('5f1be0c2026d981bf3b703b2')
+	return bson.ObjectId('5f1d433df6655007a6e3c862')
 
 
 def verifyNecessaryRequestKeys(myMap: dict, necessaryKeys: list) -> bool:
@@ -64,7 +64,7 @@ def signInUser():
 	objectKeys = ["name", "email", "google_id"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
-		return "Invalid Request: Items Missing"
+		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
 	return dumps(user_ctrl.signInUser(processedRequest))
@@ -76,7 +76,7 @@ def createTask():
 	objectKeys = ["name", "description", "base_score", "category", "tags"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
-		return "Invalid Request: Items Missing"
+		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
 	uid = authenticateToken(request.form['access_token'])
@@ -84,8 +84,8 @@ def createTask():
 
 	result = task_ctrl.createTask(processedRequest)
 	if result is None:
-		return "IT DIDN'T WORK"
-	return str(result)
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
 
 
 # createBonusRequest(access_token,task_id,data_source,bonus_name,input_label,upper_bound,lower_bound,evaluation_type,constants)
@@ -95,7 +95,7 @@ def createBonus():
 	objectKeys = ["task_id", "data_source", "bonus_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
-		return "Invalid Request: Items Missing"
+		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
 	processedRequest['task_id'] = bson.ObjectId(processedRequest['task_id'])
@@ -105,8 +105,8 @@ def createBonus():
 
 	result = bonus_ctrl.createBonus(processedRequest)
 	if result is None:
-		return "IT DIDN'T WORK"
-	return str(result)
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
 
 
 # logTaskRequest(access_token,task_id,bonus_instances,remarks) -> bonus_instances is an array of
@@ -116,7 +116,7 @@ def logTask():
 	objectKeys = ["task_id", "bonus_instances", "remarks"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
-		return "Invalid Request: Items Missing"
+		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
 	uid = authenticateToken(request.form['access_token'])
@@ -124,8 +124,8 @@ def logTask():
 
 	result = log_ctrl.logTask(processedRequest)
 	if result is None:
-		return "IT DIDN'T WORK"
-	return str(result)
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
 
 
 ###############################################################################
