@@ -31,7 +31,7 @@ log_ctrl = LogController(tdb, bonus_ctrl)
 
 def authenticateToken(accessToken):
 	# TODO: auth
-	return bson.ObjectId('5f1d433df6655007a6e3c862')
+	return bson.ObjectId('5f1c7513e11c6fdce6046488')
 
 
 def verifyNecessaryRequestKeys(myMap: dict, necessaryKeys: list) -> bool:
@@ -57,6 +57,11 @@ def extractRequiredKeys(myMap: dict, required: list) -> dict:
 			newMap[key] = [float(x) for x in newMap[key]]
 	return newMap
 
+
+@application.route('/API/Health/', methods=['POST'])
+def health():
+	print(request.form)
+	return dumps({"KEY":"HEALTHY"})
 
 @application.route('/API/signInUser/', methods=['POST'])
 def signInUser():
