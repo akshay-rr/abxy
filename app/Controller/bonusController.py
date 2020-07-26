@@ -12,9 +12,9 @@ class BonusController:
 	@staticmethod
 	def computeScoreAddition(bonus, data):
 		constants = bonus['constants']
-		if bonus['evaluation_type'] == "ADDITIVE":
+		if bonus['evaluation_type'] == "LIN":
 			return round(constants[0] * data)
-		elif bonus['evaluation_type'] == "SIGMOID":
+		elif bonus['evaluation_type'] == "SIG":
 			return round(constants[0] * math.tanh(data / (constants[1] / 2)))
 
 	@staticmethod
