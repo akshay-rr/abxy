@@ -58,6 +58,11 @@ def extractRequiredKeys(myMap: dict, required: list) -> dict:
 	return newMap
 
 
+@application.route('/API/Health/', methods=['POST'])
+def health():
+	print(request.form)
+	return dumps({"KEY":"HEALTHY"})
+
 @application.route('/API/signInUser/', methods=['POST'])
 def signInUser():
 	necessaryKeys = ["access_token", "name", "email", "google_id"]
