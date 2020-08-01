@@ -1,0 +1,13 @@
+{
+  "bsonType": "object",
+  "required": ["access_token","uid"],
+  "additionalProperies": false,
+  "properties": {
+    "uid": {
+      "bsonType": "objectId"
+    },
+    "access_token": {
+      "bsonType": "string"
+    }
+  }
+}

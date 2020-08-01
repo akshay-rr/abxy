@@ -12,6 +12,7 @@ class TaskDatabase:
 		self.db = self.client[db_name]
 		self.userCollection = self.db['users']
 		self.taskLogCollection = self.db['taskLog']
+		self.activeSessionCollection = self.db['activeSessions']
 
 	def getUserObjectByEmailAndGoogleID(self, email: str, google_id: str):
 		return self.userCollection.find_one({"email": email, "google_id": google_id})
@@ -67,3 +68,15 @@ class TaskDatabase:
 
 	def getLogEntriesByUid(self, uid):
 		return list(self.taskLogCollection.find({'uid': uid}))
+
+	def putActiveUser(self, accessToken, uid):
+		result = self.activeSessionCollection.insert_one({"access_token": accessToken, "uid": uid})
+		if result.inserted_id is not None:
+			return result.inserted_id
+		return None
+
+	def getActiveUser(self, accessToken):
+		return self.activeSessionCollection.find_one({"access_token": accessToken})['uid']
+
+	def eraseActiveUser(self, accessToken):
+		return self.activeSessionCollection.find_one_and_delete({"access_token": accessToken})

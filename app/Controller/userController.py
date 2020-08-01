@@ -1,14 +1,22 @@
 from Repositories.taskDatabase import TaskDatabase
 from Controller.logController import LogController
 
+
 class UserController:
 	def __init__(self, tdb: TaskDatabase, lgc: LogController):
 		self.taskDatabase = tdb
 		self.logController = lgc
 
-	def signInUser(self, signInRequest: dict):
+	def fetchCurrentActiveUserByAccessToken(self, accessToken):
+		return self.taskDatabase.getActiveUser(accessToken)
+
+	def signInUser(self, accessToken, uid):
+		return self.taskDatabase.putActiveUser(accessToken, uid)
+
+	def signInUserAndReturnData(self, signInRequest: dict):
 		userAlreadyExists = self.taskDatabase.getUserObjectByEmailAndGoogleID(signInRequest['email'], signInRequest['google_id'])
 		if userAlreadyExists is not None:
+			self.signInUser(signInRequest['access_token'], userAlreadyExists['_id'])
 			return self.logController.appendLogEntries(userAlreadyExists)
 
 		userObjectKeysFromSignInRequest = ["name", "email", "google_id"]
@@ -22,4 +30,11 @@ class UserController:
 		if insertedID is None:
 			return "INSERT FAILURE"
 		else:
-			return self.logController.appendLogEntries.appendLogEntries(self.taskDatabase.getUserObjectByUserID(insertedID))
+			self.signInUser(signInRequest['access_token'], insertedID)
+			return self.fetchLatestUser(insertedID)
+
+	def fetchLatestUser(self, uid):
+		return self.logController.appendLogEntries(self.taskDatabase.getUserObjectByUserID(uid))
+
+	def signOutUser(self, signOutRequest):
+		return self.taskDatabase.eraseActiveUser(signOutRequest['access_token'])

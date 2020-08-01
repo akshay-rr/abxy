@@ -30,8 +30,7 @@ user_ctrl = UserController(tdb, log_ctrl)
 # accessToken proxies for UID
 
 def authenticateToken(accessToken):
-	# TODO: auth
-	return bson.ObjectId('5f1c7513e11c6fdce6046488')
+	return user_ctrl.fetchCurrentActiveUserByAccessToken(accessToken)
 
 
 def verifyNecessaryRequestKeys(myMap: dict, necessaryKeys: list) -> bool:
@@ -73,7 +72,19 @@ def signInUser():
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
-	return dumps(user_ctrl.signInUser(processedRequest))
+	return dumps(user_ctrl.signInUserAndReturnData(processedRequest))
+
+
+def updateUser():
+	necessaryKeys = ["access_token"]
+	objectKeys = []
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	uid = authenticateToken(request.form['access_token'])
+	processedRequest['uid'] = uid
 
 
 @application.route('/API/createTask/', methods=['POST'])
@@ -147,6 +158,23 @@ def getUserLogEntries():
 	processedRequest['uid'] = uid
 
 	result = log_ctrl.retrieveUserLogEntries(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
+
+@application.route('/API/signOutUser', methods=['POST'])
+def signOutUser():
+	necessaryKeys = ["access_token"]
+	processedRequest = {}
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+
+	uid = authenticateToken(request.form['access_token'])
+	processedRequest['uid'] = uid
+
+	result = user_ctrl.signOutUser(processedRequest)
 	if result is None:
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))
