@@ -84,3 +84,20 @@ class LogController:
 			return None
 
 		return totalLogScore
+
+	def retrieveUserLogEntries(self, retrieveRequest):
+		uid = retrieveRequest['uid']
+		logs = self.taskDatabase.getLogEntriesByUid(uid)
+		user = self.taskDatabase.getUserObjectByUserID(uid)
+		idToNameMap = {}
+		idToCategoryMap = {}
+
+		for task in user['tasks']:
+			idToNameMap[task['_id']] = task['name']
+			idToCategoryMap[task['_id']] = task['category']
+
+		for i in range(len(logs)):
+			logs[i]['task_name'] = idToNameMap[logs[i]['task_id']]
+			logs[i]['task_category'] = idToCategoryMap[logs[i]['task_id']]
+
+		return logs

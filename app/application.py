@@ -31,7 +31,7 @@ log_ctrl = LogController(tdb, bonus_ctrl)
 
 def authenticateToken(accessToken):
 	# TODO: auth
-	return bson.ObjectId('5f1d433df6655007a6e3c862')
+	return bson.ObjectId('5f1c7513e11c6fdce6046488')
 
 
 def verifyNecessaryRequestKeys(myMap: dict, necessaryKeys: list) -> bool:
@@ -123,6 +123,24 @@ def logTask():
 	processedRequest['uid'] = uid
 
 	result = log_ctrl.logTask(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
+
+# getUserLogEntries(access_token)
+@application.route('/API/getUserLogEntries/', methods=["POST"])
+def getUserLogEntries():
+	necessaryKeys = ["access_token"]
+	processedRequest = {}
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+
+	uid = authenticateToken(request.form['access_token'])
+	processedRequest['uid'] = uid
+
+	result = log_ctrl.retrieveUserLogEntries(processedRequest)
 	if result is None:
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))
