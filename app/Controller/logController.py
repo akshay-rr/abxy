@@ -101,3 +101,7 @@ class LogController:
 			logs[i]['task_category'] = idToCategoryMap[logs[i]['task_id']]
 
 		return logs
+
+	def appendLogEntries(self, userObject):
+		userObject['task_log'] = self.retrieveUserLogEntries({"uid": userObject['_id']})
+		return userObject
