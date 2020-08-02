@@ -67,7 +67,7 @@ def health():
 @application.route('/API/signInUser/', methods=['POST'])
 def signInUser():
 	necessaryKeys = ["access_token", "name", "email", "google_id"]
-	objectKeys = ["access_token","name", "email", "google_id"]
+	objectKeys = ["access_token", "name", "email", "google_id"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
@@ -76,7 +76,8 @@ def signInUser():
 	return dumps(user_ctrl.signInUserAndReturnData(processedRequest))
 
 
-def updateUser():
+@application.route('/API/getUser/', methods=['POST'])
+def getUser():
 	necessaryKeys = ["access_token"]
 	objectKeys = []
 
@@ -86,6 +87,8 @@ def updateUser():
 
 	uid = authenticateToken(request.form['access_token'])
 	processedRequest['uid'] = uid
+
+	return dumps(user_ctrl.fetchLatestUser(uid))
 
 
 @application.route('/API/createTask/', methods=['POST'])
