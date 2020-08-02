@@ -30,6 +30,7 @@ user_ctrl = UserController(tdb, log_ctrl)
 # accessToken proxies for UID
 
 def authenticateToken(accessToken):
+	accessToken = json.loads(accessToken)
 	return user_ctrl.fetchCurrentActiveUserByAccessToken(accessToken)
 
 
@@ -66,7 +67,7 @@ def health():
 @application.route('/API/signInUser/', methods=['POST'])
 def signInUser():
 	necessaryKeys = ["access_token", "name", "email", "google_id"]
-	objectKeys = ["name", "email", "google_id"]
+	objectKeys = ["access_token","name", "email", "google_id"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
@@ -163,10 +164,11 @@ def getUserLogEntries():
 	return dumps(str(result))
 
 
-@application.route('/API/signOutUser', methods=['POST'])
+@application.route('/API/signOutUser/', methods=['POST'])
 def signOutUser():
 	necessaryKeys = ["access_token"]
-	processedRequest = {}
+	objectKeys = ["access_token"]
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")

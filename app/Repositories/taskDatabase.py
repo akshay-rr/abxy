@@ -76,6 +76,11 @@ class TaskDatabase:
 		return None
 
 	def getActiveUser(self, accessToken):
+		print("HI")
+		print(accessToken)
+		print(self.activeSessionCollection.find_one())
+		print(self.activeSessionCollection.find_one({"access_token": accessToken}))
+
 		return self.activeSessionCollection.find_one({"access_token": accessToken})['uid']
 
 	def eraseActiveUser(self, accessToken):
