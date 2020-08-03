@@ -50,6 +50,7 @@ class LogController:
 						break
 			else:
 				data = self.bonusController.getDataQuantity(uid, task_id, bonuses[i])
+				print("DATA",data)
 				if data is None:
 					return None
 
@@ -60,6 +61,7 @@ class LogController:
 			if bonusLog[i]['score_addition'] is None:
 				return None
 			totalLogScoreAddition += bonusLog[i]['score_addition']
+		print("REACHED HERE")
 
 		totalLogScore = int(task['base_score'] + totalLogScoreAddition)
 		timeNow = datetime.now()

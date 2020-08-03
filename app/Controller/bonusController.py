@@ -92,6 +92,8 @@ class BonusController:
 			timeNow = datetime.now()
 			# get the most recent taskLog with the same uid,tid
 			mostRecentLog = self.taskDatabase.getMostRecentLogByUserIDAndTaskID(uid, task_id)
+			if mostRecentLog is None:
+				return 0
 			for bonusInstance in mostRecentLog['bonus_instances']:
 				# check the input value for the same bonus
 				if bonusInstance['bonus_id'] == bonus['_id']:
@@ -99,4 +101,4 @@ class BonusController:
 						return float(bonusInstance['input_quantity'] + 1)
 					else:
 						return float(bonusInstance['input_quantity'])
-		return None
+		return 0
