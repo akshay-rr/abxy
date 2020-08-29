@@ -9,7 +9,7 @@ import bson
 
 application = app = Flask(__name__)
 
-tdb = TaskDatabase("mongodb+srv://admin_user:Brskol8pZbhZwcec@cluster0.j34k4.mongodb.net?retryWrites=true&w=majority", "test")
+tdb = TaskDatabase("mongodb+srv://admin_user:Brskol8pZbhZwcec@cluster0.j34k4.mongodb.net/test?retryWrites=true&w=majority", "test")
 task_ctrl = TaskController(tdb)
 bonus_ctrl = BonusController(tdb)
 log_ctrl = LogController(tdb, bonus_ctrl)
@@ -135,7 +135,7 @@ def createBonus():
 def logTask():
 	necessaryKeys = ["access_token", "task_id", "bonus_instances", "remarks", "timestamp"]
 	objectKeys = ["task_id", "bonus_instances", "remarks", "timestamp"]
-
+	
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
