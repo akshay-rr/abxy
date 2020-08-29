@@ -133,8 +133,8 @@ def createBonus():
 # logTaskRequest(access_token,task_id,bonus_instances,remarks) -> bonus_instances is an array of
 @application.route('/API/logTask/', methods=["POST"])
 def logTask():
-	necessaryKeys = ["access_token", "task_id", "bonus_instances", "remarks"]
-	objectKeys = ["task_id", "bonus_instances", "remarks"]
+	necessaryKeys = ["access_token", "task_id", "bonus_instances", "remarks", "timestamp"]
+	objectKeys = ["task_id", "bonus_instances", "remarks", "timestamp"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")

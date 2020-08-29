@@ -67,7 +67,7 @@ class LogController:
 		timeNow = datetime.now()
 
 		# build taskLogObject
-		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': timeNow, 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore}
+		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': datetime.fromtimestamp(logRequest["timestamp"]), 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
 
 		# update task last_done_on
 		if self.taskDatabase.setTaskLastDone(uid, task_id, timeNow) is None:

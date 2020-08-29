@@ -1,6 +1,6 @@
 {
   "bsonType": "object",
-  "required": ["_id", "uid", "task_id", "timestamp", "bonus_instances","remarks", "score"],
+  "required": ["_id", "uid", "task_id", "timestamp", "server_time", "bonus_instances","remarks", "score"],
   "additionalProperties": false,
   "properties": {
     "_id": {
@@ -13,6 +13,9 @@
       "bsonType": "objectId"
     },
     "timestamp": {
+      "bsonType": "date"
+    },
+    "server_time": {
       "bsonType": "date"
     },
     "remarks": {
