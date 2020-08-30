@@ -21,4 +21,4 @@ class TaskController:
 		return self.taskDatabase.putNewTask(uid, taskObject)
 
 	def archiveTask(self, taskArchivalRequest):
-		return self.taskDatabase.archiveTaskByUIDAndTaskID(taskArchivalRequest['uid'], taskArchivalRequest['task_id'])
+		return self.taskDatabase.archiveTaskByUIDAndTaskID(bson.ObjectId(taskArchivalRequest['uid']), bson.ObjectId(taskArchivalRequest['task_id']))

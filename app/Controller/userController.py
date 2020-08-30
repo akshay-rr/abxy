@@ -17,7 +17,7 @@ class UserController:
 		userAlreadyExists = self.taskDatabase.getUserObjectByEmailAndGoogleID(signInRequest['email'], signInRequest['google_id'])
 		if userAlreadyExists is not None:
 			self.signInUser(signInRequest['access_token'], userAlreadyExists['_id'])
-			return self.logController.appendLogEntries(userAlreadyExists)
+			return self.logController.appendLogEntries(self.fetchLatestUserWithoutArchivedTasks(userAlreadyExists['_id']))
 
 		userObjectKeysFromSignInRequest = ["name", "email", "google_id"]
 		userObject = {}
