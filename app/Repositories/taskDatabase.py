@@ -4,10 +4,16 @@ from pymongo import MongoClient
 import bson
 
 
+# import pymongo
+# from pymongo import MongoClient
+# import bson
+# client = MongoClient("mongodb+srv://admin_user:Brskol8pZbhZwcec@cluster0.j34k4.mongodb.net/test?retryWrites=true&w=majority")
+# db = client['test']
+
+
 class TaskDatabase:
 
 	def __init__(self, db_string: str, db_name: str):
-		# "mongodb+srv://test_user0:riktXHrvxRuVkS6F@cluster0.heb4n.mongodb.net/test?retryWrites=true&w=majority"
 		self.client = MongoClient(db_string)
 		self.db = self.client[db_name]
 		self.userCollection = self.db['users']
@@ -76,12 +82,10 @@ class TaskDatabase:
 		return None
 
 	def getActiveUser(self, accessToken):
-		print("HI")
-		print(accessToken)
-		print(self.activeSessionCollection.find_one())
-		print(self.activeSessionCollection.find_one({"access_token": accessToken}))
-
 		return self.activeSessionCollection.find_one({"access_token": accessToken})['uid']
 
 	def eraseActiveUser(self, accessToken):
 		return self.activeSessionCollection.find_one_and_delete({"access_token": accessToken})
+
+	def archiveTaskByUIDAndTaskID(self, uid, task_id):
+		return self.userCollection.update_one({'_id': uid}, {"$set": {"tasks.$[xyz].archived": True}}, array_filters=[{"xyz._id": task_id}])

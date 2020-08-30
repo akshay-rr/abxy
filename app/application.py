@@ -109,6 +109,24 @@ def createTask():
 	return dumps(str(result))
 
 
+@application.route('/API/archiveTask/', methods=['POST'])
+def archiveTask():
+	necessaryKeys = ["access_token", "task_id"]
+	objectKeys = ["task_id"]
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	uid = authenticateToken(request.form['access_token'])
+	processedRequest['uid'] = uid
+
+	result = task_ctrl.archiveTask(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
+
 # createBonusRequest(access_token,task_id,data_source,bonus_name,input_label,upper_bound,lower_bound,evaluation_type,constants)
 @application.route('/API/createBonus/', methods=['POST'])
 def createBonus():
@@ -129,13 +147,16 @@ def createBonus():
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))
 
+# @application.route('/API/deleteBonus',methods=['DELETE'])
+# def createBonus():
+
 
 # logTaskRequest(access_token,task_id,bonus_instances,remarks) -> bonus_instances is an array of
 @application.route('/API/logTask/', methods=["POST"])
 def logTask():
 	necessaryKeys = ["access_token", "task_id", "bonus_instances", "remarks", "timestamp"]
 	objectKeys = ["task_id", "bonus_instances", "remarks", "timestamp"]
-	
+
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)

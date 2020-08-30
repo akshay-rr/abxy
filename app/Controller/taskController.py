@@ -19,3 +19,6 @@ class TaskController:
 		taskObject['bonuses'] = []
 
 		return self.taskDatabase.putNewTask(uid, taskObject)
+
+	def archiveTask(self, taskArchivalRequest):
+		return self.taskDatabase.archiveTaskByUIDAndTaskID(taskArchivalRequest['uid'], taskArchivalRequest['task_id'])
