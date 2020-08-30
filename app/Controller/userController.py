@@ -31,10 +31,16 @@ class UserController:
 			return "INSERT FAILURE"
 		else:
 			self.signInUser(signInRequest['access_token'], insertedID)
-			return self.fetchLatestUser(insertedID)
+			return self.fetchLatestUserWithoutArchivedTasks(insertedID)
 
 	def fetchLatestUser(self, uid):
 		return self.logController.appendLogEntries(self.taskDatabase.getUserObjectByUserID(uid))
+
+	def fetchLatestUserWithoutArchivedTasks(self, uid):
+		user = self.fetchLatestUser(uid)
+		not_archived_tasks = [task for task in user['tasks'] if not task['archived']]
+		user['tasks'] = not_archived_tasks
+		return user
 
 	def signOutUser(self, signOutRequest):
 		return self.taskDatabase.eraseActiveUser(signOutRequest['access_token'])

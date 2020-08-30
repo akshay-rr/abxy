@@ -88,7 +88,7 @@ def getUser():
 	uid = authenticateToken(request.form['access_token'])
 	processedRequest['uid'] = uid
 
-	return dumps(user_ctrl.fetchLatestUser(uid))
+	return dumps(user_ctrl.fetchLatestUserWithoutArchivedTasks(uid))
 
 
 @application.route('/API/createTask/', methods=['POST'])
