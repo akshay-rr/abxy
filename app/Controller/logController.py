@@ -67,7 +67,7 @@ class LogController:
 		timeNow = datetime.now()
 
 		# build taskLogObject
-		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': datetime.fromtimestamp(int(logRequest["timestamp"] / 1000)), 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
+		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': datetime.utcfromtimestamp(int(logRequest["timestamp"] / 1000)), 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
 
 		# update task last_done_on
 		if self.taskDatabase.setTaskLastDone(uid, task_id, timeNow) is None:
@@ -114,7 +114,7 @@ class LogController:
 		# update the task last done
 		mostRecentLog = self.taskDatabase.getMostRecentLogByUserIDAndTaskID(uid, task_id)
 		if mostRecentLog is None:
-			if self.taskDatabase.setTaskLastDone(uid, task_id, datetime.fromtimestamp(0)) is None:
+			if self.taskDatabase.setTaskLastDone(uid, task_id, datetime.utcfromtimestamp(0)) is None:
 				return None
 		else:
 			if self.taskDatabase.setTaskLastDone(uid, task_id, mostRecentLog['timestamp']) is None:

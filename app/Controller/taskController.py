@@ -15,7 +15,7 @@ class TaskController:
 			taskObject[key] = taskCreationRequest[key]
 		taskObject['_id'] = bson.ObjectId()
 		taskObject['created_on'] = datetime.now()
-		taskObject['last_done_on'] = datetime.fromtimestamp(0)
+		taskObject['last_done_on'] = datetime.utcfromtimestamp(0)
 		taskObject['bonuses'] = []
 
 		return self.taskDatabase.putNewTask(uid, taskObject)
