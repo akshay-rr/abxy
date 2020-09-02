@@ -57,6 +57,9 @@ class TaskDatabase:
 			return result.inserted_id
 		return None
 
+	def deleteLogByID(self, log_id: bson.ObjectId):
+		return self.taskLogCollection.find_one_and_delete({"_id": log_id})
+
 	def setTaskLastDone(self, uid: bson.ObjectId, task_id: bson.ObjectId, time):
 		result = self.userCollection.update_one({"_id": uid, "tasks._id": task_id}, {"$set": {"tasks.$.last_done_on": time}})
 		if result.matched_count > 0:
@@ -89,3 +92,6 @@ class TaskDatabase:
 
 	def archiveTaskByUIDAndTaskID(self, uid, task_id):
 		return self.userCollection.update_one({'_id': uid}, {"$set": {"tasks.$[xyz].archived": True}}, array_filters=[{"xyz._id": task_id}])
+
+	def getLogEntryByUserIDandLogID(self, uid, logID):
+		return self.taskLogCollection.find_one({'uid': uid, "_id": logID})

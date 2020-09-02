@@ -147,6 +147,7 @@ def createBonus():
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))
 
+
 # @application.route('/API/deleteBonus',methods=['DELETE'])
 # def createBonus():
 
@@ -165,6 +166,24 @@ def logTask():
 	processedRequest['uid'] = uid
 
 	result = log_ctrl.logTask(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
+
+@application.route('/API/deleteLog/', methods=["POST"])
+def deleteLog():
+	necessaryKeys = ["access_token", "log_id"]
+	objectKeys = ["log_id"]
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	uid = authenticateToken(request.form['access_token'])
+	processedRequest['uid'] = uid
+
+	result = log_ctrl.deleteLog(processedRequest)
 	if result is None:
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))
