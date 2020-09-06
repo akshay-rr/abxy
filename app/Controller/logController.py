@@ -1,4 +1,5 @@
 from datetime import datetime
+import dateutil.parser
 import bson
 from Repositories.taskDatabase import TaskDatabase
 from Controller.bonusController import BonusController
@@ -37,6 +38,9 @@ class LogController:
 		bonuses = task['bonuses']
 		totalLogScoreAddition = 0.0
 
+		timeOfLog = dateutil.parser.parse(logRequest['timestamp'])
+		# timeOfLog = datetime.utcfromtimestamp(int(logRequest["timestamp"] / 1000))
+
 		for i in range(len(bonuses)):
 			bonusLog.append({})
 
@@ -49,7 +53,7 @@ class LogController:
 						data = bonusDataInstance['input_quantity']
 						break
 			else:
-				data = self.bonusController.getDataQuantity(uid, task_id, bonuses[i])
+				data = self.bonusController.getDataQuantity(uid, task_id, timeOfLog, bonuses[i])
 				# print("DATA", data)
 				if data is None:
 					return None
@@ -67,10 +71,10 @@ class LogController:
 		timeNow = datetime.now()
 
 		# build taskLogObject
-		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': datetime.utcfromtimestamp(int(logRequest["timestamp"] / 1000)), 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
+		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': timeOfLog, 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
 
 		# update task last_done_on
-		if self.taskDatabase.setTaskLastDone(uid, task_id, timeNow) is None:
+		if self.taskDatabase.setTaskLastDone(uid, task_id, timeOfLog) is None:
 			return None
 
 		# print("REACHED HERE 1")
@@ -114,14 +118,13 @@ class LogController:
 		# update the task last done
 		mostRecentLog = self.taskDatabase.getMostRecentLogByUserIDAndTaskID(uid, task_id)
 		if mostRecentLog is None:
-			if self.taskDatabase.setTaskLastDone(uid, task_id, datetime.utcfromtimestamp(0)) is None:
+			if self.taskDatabase.setTaskLastDone(uid, task_id, datetime.fromtimestamp(0)) is None:
 				return None
 		else:
 			if self.taskDatabase.setTaskLastDone(uid, task_id, mostRecentLog['timestamp']) is None:
 				return None
 
 		return "SUCCESS"
-
 
 	def retrieveUserLogEntries(self, retrieveRequest):
 		uid = retrieveRequest['uid']

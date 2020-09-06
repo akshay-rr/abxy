@@ -72,8 +72,9 @@ def signInUser():
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
-
-	return dumps(user_ctrl.signInUserAndReturnData(processedRequest))
+	test = dumps(user_ctrl.signInUserAndReturnData(processedRequest))
+	# print(test)
+	return test
 
 
 @application.route('/API/getUser/', methods=['POST'])
@@ -87,8 +88,9 @@ def getUser():
 
 	uid = authenticateToken(request.form['access_token'])
 	processedRequest['uid'] = uid
-
-	return dumps(user_ctrl.fetchLatestUserWithoutArchivedTasks(uid))
+	test = dumps(user_ctrl.fetchLatestUserWithoutArchivedTasks(uid))
+	# print(test)
+	return test
 
 
 @application.route('/API/createTask/', methods=['POST'])
@@ -133,6 +135,8 @@ def createBonus():
 	necessaryKeys = ["access_token", "task_id", "data_source", "bonus_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
 	objectKeys = ["task_id", "data_source", "bonus_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
 
+	print(request.form)
+
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
@@ -157,6 +161,8 @@ def createBonus():
 def logTask():
 	necessaryKeys = ["access_token", "task_id", "bonus_instances", "remarks", "timestamp"]
 	objectKeys = ["task_id", "bonus_instances", "remarks", "timestamp"]
+
+	print(request.form)
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
