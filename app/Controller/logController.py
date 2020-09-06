@@ -66,11 +66,13 @@ class LogController:
 		totalLogScore = int(task['base_score'] + totalLogScoreAddition)
 		timeNow = datetime.now()
 
+		timeOfLog = datetime.utcfromtimestamp(int(logRequest["timestamp"] / 1000))
+
 		# build taskLogObject
-		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': datetime.utcfromtimestamp(int(logRequest["timestamp"] / 1000)), 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
+		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': timeOfLog, 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
 
 		# update task last_done_on
-		if self.taskDatabase.setTaskLastDone(uid, task_id, timeNow) is None:
+		if self.taskDatabase.setTaskLastDone(uid, task_id, timeOfLog) is None:
 			return None
 
 		# print("REACHED HERE 1")
