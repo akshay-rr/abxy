@@ -17,6 +17,7 @@ class TaskController:
 		taskObject['created_on'] = datetime.now()
 		taskObject['last_done_on'] = datetime.utcfromtimestamp(0)
 		taskObject['bonuses'] = []
+		taskObject['archived'] = False
 
 		return self.taskDatabase.putNewTask(uid, taskObject)
 
