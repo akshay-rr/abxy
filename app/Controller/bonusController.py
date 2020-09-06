@@ -60,6 +60,10 @@ class BonusController:
 
 	@staticmethod
 	def isTimeRepeat(oldTime, newTime, frequency):
+
+		print(oldTime)
+		print(newTime)
+
 		if frequency == "HOURLY":
 			return BonusController.hourDistanceIsOne(oldTime, newTime)
 		elif frequency == "DAILY":
@@ -87,9 +91,8 @@ class BonusController:
 
 		return self.taskDatabase.putNewBonus(uid, task_id, bonusObject)
 
-	def getDataQuantity(self, uid, task_id, bonus):
+	def getDataQuantity(self, uid, task_id, logTimestamp, bonus):
 		if bonus['data_source'] == "REPETITION":
-			timeNow = datetime.now()
 			# get the most recent taskLog with the same uid,tid
 			mostRecentLog = self.taskDatabase.getMostRecentLogByUserIDAndTaskID(uid, task_id)
 			if mostRecentLog is None:
@@ -97,8 +100,8 @@ class BonusController:
 			for bonusInstance in mostRecentLog['bonus_instances']:
 				# check the input value for the same bonus
 				if bonusInstance['bonus_id'] == bonus['_id']:
-					if BonusController.isTimeRepeat(mostRecentLog['timestamp'], timeNow, bonus['input_label']):
+					if BonusController.isTimeRepeat(mostRecentLog['timestamp'], logTimestamp, bonus['input_label']):
 						return float(bonusInstance['input_quantity'] + 1)
 					else:
-						return float(bonusInstance['input_quantity'])
+						return 0
 		return 0

@@ -1,5 +1,18 @@
 from Repositories.taskDatabase import TaskDatabase
 from Controller.logController import LogController
+from datetime import datetime
+
+def convert_all_dates_to_strings(myObject):
+	if isinstance(myObject, dict):
+		keys = myObject.keys()
+		for key in keys:
+			myObject[key] = convert_all_dates_to_strings(myObject[key])
+	elif isinstance(myObject, list):
+		for i in range(len(myObject)):
+			myObject[i] = convert_all_dates_to_strings(myObject[i])
+	elif isinstance(myObject, datetime):
+		return myObject.isoformat()
+	return myObject
 
 
 class UserController:
@@ -38,7 +51,11 @@ class UserController:
 
 	def fetchLatestUserWithoutArchivedTasks(self, uid):
 		user = self.fetchLatestUser(uid)
-		not_archived_tasks = [task for task in user['tasks'] if not task['archived']]
+		# print(user)
+		# print(convert_all_dates_to_strings(user))
+		not_archived_tasks = [task for task in user['tasks'] if ('archived' not in task) or (not task['archived'])]
+		user = convert_all_dates_to_strings(user)
+
 		user['tasks'] = not_archived_tasks
 		return user
 
