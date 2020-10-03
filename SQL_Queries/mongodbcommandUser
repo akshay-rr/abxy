@@ -1,105 +1,105 @@
 db.createCollection("users", {
     validator: {
         $jsonSchema: {
-          "bsonType": "object",
-          "required": ["_id","name","email","google_id","score","tasks"],
-          "additionalProperties": false,
-          "properties": {
-            "_id": {
-              "bsonType": "objectId"
-            },
-            "email": {
-              "bsonType":"string"
-            },
-            "name": {
-              "bsonType":"string"
-            },
-            "google_id": {
-              "bsonType":"string"
-            },
-            "score": {
-              "bsonType":"int"
-            },
-            "tasks": {
-              "bsonType": "array",
-              "items": {
-                "bsonType": "object",
-                "required": ["_id","name","description","base_score","category","bonuses", "created_on", "last_done_on"],
-                "properties": {
-                  "_id": {
-                    "bsonType": "objectId"
-                  },
-                  "name": {
-                    "bsonType": "string"
-                  },
-                  "tags": {
-                    "bsonType": "array",
-                    "items": {
-                      "bsonType": "string"
-                    }
-                  },
-                  "description": {
-                    "bsonType": "string"
-                  },
-                  "base_score": {
-                    "bsonType": "int"
-                  },
-                  "category": {
-                    "bsonType": "string"
-                  },
-                  "bonuses": {
-                    "bsonType": "array",
-                    "items": {
-                      "bsonType": "object",
-                      "required": ["_id","data_source","bonus_name","input_label","upper_bound","lower_bound", "evaluation_type","constants", "created_on"],
-                      "additionalProperties": false,
-                      "properties": {
-                        "_id": {
-                          "bsonType": "objectId"
-                        },
-                        "data_source": {
-                          "bsonType": "string"
-                        },
-                        "bonus_name": {
-                          "bsonType": "string"
-                        },
-                        "input_label": {
-                          "bsonType": "string"
-                        },
-                        "upper_bound": {
-                          "bsonType": "double"
-                        },
-                        "lower_bound": {
-                          "bsonType": "double"
-                        },
-                        "evaluation_type": {
-                          "bsonType": "string"
-                        },
-                        "constants": {
-                          "bsonType": "array",
-                          "items": {
-                            "bsonType": "double"
-                          }
-                        },
-                        "created_on": {
-                          "bsonType": "date"
-                        }
-                      }
-                    }
-                  },
-                  "created_on": {
-                    "bsonType": "date"
-                  },
-                  "last_done_on": {
-                    "bsonType": "date"
-                  }
-
-                }
-              },
-              "uniqueItems": true
+  "bsonType": "object",
+  "required": ["_id","name","email","firebase_id","score","tasks"],
+  "additionalProperties": false,
+  "properties": {
+    "_id": {
+      "bsonType": "objectId"
+    },
+    "email": {
+      "bsonType":"string"
+    },
+    "name": {
+      "bsonType":"string"
+    },
+    "firebase_id": {
+      "bsonType":"string"
+    },
+    "score": {
+      "bsonType":"int"
+    },
+    "tasks": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "required": ["_id","name","description","base_score","category","bonuses", "created_on", "last_done_on"],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "name": {
+            "bsonType": "string"
+          },
+          "tags": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "string"
             }
+          },
+          "description": {
+            "bsonType": "string"
+          },
+          "base_score": {
+            "bsonType": "int"
+          },
+          "category": {
+            "bsonType": "string"
+          },
+          "bonuses": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "object",
+              "required": ["_id","data_source","bonus_name","input_label","upper_bound","lower_bound", "evaluation_type","constants", "created_on"],
+              "additionalProperties": false,
+              "properties": {
+                "_id": {
+                  "bsonType": "objectId"
+                },
+                "data_source": {
+                  "bsonType": "string"
+                },
+                "bonus_name": {
+                  "bsonType": "string"
+                },
+                "input_label": {
+                  "bsonType": "string"
+                },
+                "upper_bound": {
+                  "bsonType": "double"
+                },
+                "lower_bound": {
+                  "bsonType": "double"
+                },
+                "evaluation_type": {
+                  "bsonType": "string"
+                },
+                "constants": {
+                  "bsonType": "array",
+                  "items": {
+                    "bsonType": "double"
+                  }
+                },
+                "created_on": {
+                  "bsonType": "date"
+                }
+              }
+            }
+          },
+          "created_on": {
+            "bsonType": "date"
+          },
+          "last_done_on": {
+            "bsonType": "date"
           }
+
         }
+      },
+      "uniqueItems": true
+    }
+  }
+}
     },
     validationAction:"error"
 })

@@ -7,6 +7,13 @@ from Repositories.taskDatabase import TaskDatabase
 from bson.json_util import dumps
 import bson
 
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import auth
+
+cred = credentials.Certificate("abxy-3e495-firebase-adminsdk-zir93-682dad0957.json")
+firebase_admin.initialize_app(cred)
+
 application = app = Flask(__name__)
 
 tdb = TaskDatabase("mongodb+srv://admin_user:Brskol8pZbhZwcec@cluster0.j34k4.mongodb.net/test?retryWrites=true&w=majority", "test")
@@ -29,9 +36,16 @@ user_ctrl = UserController(tdb, log_ctrl)
 # logTaskRequest(accessToken,task_id,bonus_instances,remarks) -> bonus_instances is an array of
 # accessToken proxies for UID
 
-def authenticateToken(accessToken):
-	accessToken = json.loads(accessToken)
-	return user_ctrl.fetchCurrentActiveUserByAccessToken(accessToken)
+def authenticateToken(id_token):
+	# id_token comes from the client app (shown above)
+	try:
+		decoded_token = auth.verify_id_token(id_token)
+	except ValueError:
+		return "ID TOKEN MALFORMED"
+	except auth.ExpiredIdTokenError:
+		return "ID TOKEN EXPIRED"
+	uid = decoded_token['uid']
+	return uid
 
 
 def verifyNecessaryRequestKeys(myMap: dict, necessaryKeys: list) -> bool:
@@ -64,31 +78,34 @@ def health():
 	return dumps({"KEY": "HEALTHY"})
 
 
-@application.route('/API/signInUser/', methods=['POST'])
-def signInUser():
-	necessaryKeys = ["access_token", "name", "email", "google_id"]
-	objectKeys = ["access_token", "name", "email", "google_id"]
+@application.route('/API/registerNewUser/', methods=['POST'])
+def registerNewUser():
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["name", "email"]
+	objectKeys = ["name", "email"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
+
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
-	test = dumps(user_ctrl.signInUserAndReturnData(processedRequest))
-	# print(test)
+	processedRequest['firebase_id'] = firebase_id
+
+	test = dumps(user_ctrl.registerNewUserAndReturnData(processedRequest))
 	return test
 
 
 @application.route('/API/getUser/', methods=['POST'])
 def getUser():
-	necessaryKeys = ["access_token"]
-	objectKeys = []
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
 
-	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
-		return dumps("Invalid Request: Items Missing")
-	processedRequest = extractRequiredKeys(request.form, objectKeys)
-
-	uid = authenticateToken(request.form['access_token'])
-	processedRequest['uid'] = uid
-	test = dumps(user_ctrl.fetchLatestUserWithoutArchivedTasks(uid))
+	test = dumps(user_ctrl.fetchLatestUserWithoutArchivedTasksByFirebaseID(firebase_id))
 	# print(test)
 	return test
 
@@ -208,24 +225,6 @@ def getUserLogEntries():
 	processedRequest['uid'] = uid
 
 	result = log_ctrl.retrieveUserLogEntries(processedRequest)
-	if result is None:
-		return dumps("IT DIDN'T WORK")
-	return dumps(str(result))
-
-
-@application.route('/API/signOutUser/', methods=['POST'])
-def signOutUser():
-	necessaryKeys = ["access_token"]
-	objectKeys = ["access_token"]
-	processedRequest = extractRequiredKeys(request.form, objectKeys)
-
-	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
-		return dumps("Invalid Request: Items Missing")
-
-	uid = authenticateToken(request.form['access_token'])
-	processedRequest['uid'] = uid
-
-	result = user_ctrl.signOutUser(processedRequest)
 	if result is None:
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))

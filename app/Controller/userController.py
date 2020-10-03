@@ -2,6 +2,7 @@ from Repositories.taskDatabase import TaskDatabase
 from Controller.logController import LogController
 from datetime import datetime
 
+
 def convert_all_dates_to_strings(myObject):
 	if isinstance(myObject, dict):
 		keys = myObject.keys()
@@ -23,16 +24,8 @@ class UserController:
 	def fetchCurrentActiveUserByAccessToken(self, accessToken):
 		return self.taskDatabase.getActiveUser(accessToken)
 
-	def signInUser(self, accessToken, uid):
-		return self.taskDatabase.putActiveUser(accessToken, uid)
-
-	def signInUserAndReturnData(self, signInRequest: dict):
-		userAlreadyExists = self.taskDatabase.getUserObjectByEmailAndGoogleID(signInRequest['email'], signInRequest['google_id'])
-		if userAlreadyExists is not None:
-			self.signInUser(signInRequest['access_token'], userAlreadyExists['_id'])
-			return self.fetchLatestUserWithoutArchivedTasks(userAlreadyExists['_id'])
-
-		userObjectKeysFromSignInRequest = ["name", "email", "google_id"]
+	def registerNewUserAndReturnData(self, signInRequest: dict):
+		userObjectKeysFromSignInRequest = ["name", "email", "firebase_id"]
 		userObject = {}
 		for key in userObjectKeysFromSignInRequest:
 			userObject[key] = signInRequest[key]
@@ -43,21 +36,15 @@ class UserController:
 		if insertedID is None:
 			return "INSERT FAILURE"
 		else:
-			self.signInUser(signInRequest['access_token'], insertedID)
-			return self.fetchLatestUserWithoutArchivedTasks(insertedID)
+			return self.fetchLatestUserWithoutArchivedTasks(userObject['firebase_id'])
 
-	def fetchLatestUser(self, uid):
-		return self.logController.appendLogEntries(self.taskDatabase.getUserObjectByUserID(uid))
+	def fetchLatestUserWithLogEntriesByFirebaseId(self, firebase_id):
+		return self.logController.appendLogEntries(self.taskDatabase.getUserObjectByFirebaseID(firebase_id))
 
-	def fetchLatestUserWithoutArchivedTasks(self, uid):
-		user = self.fetchLatestUser(uid)
-		# print(user)
-		# print(convert_all_dates_to_strings(user))
+	def fetchLatestUserWithoutArchivedTasksByFirebaseID(self, firebase_id):
+		user = self.fetchLatestUserWithLogEntriesByFirebaseId(firebase_id)
 		not_archived_tasks = [task for task in user['tasks'] if ('archived' not in task) or (not task['archived'])]
 		user = convert_all_dates_to_strings(user)
 
 		user['tasks'] = not_archived_tasks
 		return user
-
-	def signOutUser(self, signOutRequest):
-		return self.taskDatabase.eraseActiveUser(signOutRequest['access_token'])

@@ -1,6 +1,6 @@
 {
   "bsonType": "object",
-  "required": ["_id","name","email","google_id","score","tasks"],
+  "required": ["_id","name","email","firebase_id","score","tasks"],
   "additionalProperties": false,
   "properties": {
     "_id": {
@@ -12,7 +12,7 @@
     "name": {
       "bsonType":"string"
     },
-    "google_id": {
+    "firebase_id": {
       "bsonType":"string"
     },
     "score": {

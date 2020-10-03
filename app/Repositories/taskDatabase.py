@@ -26,6 +26,9 @@ class TaskDatabase:
 	def getUserObjectByUserID(self, userID: bson.ObjectId):
 		return self.userCollection.find_one({"_id": userID})
 
+	def getUserObjectByFirebaseID(self, firebase_id: str):
+		return self.userCollection.find_one({"firebase_id": firebase_id})
+
 	def getTaskObjectByUserIDAndTaskID(self, userID: bson.ObjectId, taskID: bson.ObjectId):
 		user = self.userCollection.find_one({"_id": userID})
 		for task in user['tasks']:
@@ -77,6 +80,9 @@ class TaskDatabase:
 
 	def getLogEntriesByUid(self, uid):
 		return list(self.taskLogCollection.find({'uid': uid}))
+
+	def getLogEntriesByFirebaseID(self, firebase_id):
+		return list(self.taskLogCollection.find({'firebase_id': firebase_id}))
 
 	def putActiveUser(self, accessToken, uid):
 		result = self.activeSessionCollection.insert_one({"access_token": accessToken, "uid": uid})

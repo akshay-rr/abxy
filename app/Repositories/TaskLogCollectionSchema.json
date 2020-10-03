@@ -1,13 +1,13 @@
 {
   "bsonType": "object",
-  "required": ["_id", "uid", "task_id", "timestamp", "server_time", "bonus_instances","remarks", "score"],
+  "required": ["_id", "firebase_id", "task_id", "timestamp", "server_time", "bonus_instances","remarks", "score"],
   "additionalProperties": false,
   "properties": {
     "_id": {
       "bsonType": "objectId"
     },
-    "uid": {
-      "bsonType": "objectId"
+    "firebase_id": {
+      "bsonType": "string"
     },
     "task_id":{
       "bsonType": "objectId"

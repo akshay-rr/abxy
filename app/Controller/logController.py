@@ -126,10 +126,9 @@ class LogController:
 
 		return "SUCCESS"
 
-	def retrieveUserLogEntries(self, retrieveRequest):
-		uid = retrieveRequest['uid']
-		logs = self.taskDatabase.getLogEntriesByUid(uid)
-		user = self.taskDatabase.getUserObjectByUserID(uid)
+	def retrieveUserLogEntriesByFirebaseID(self, firebase_id):
+		logs = self.taskDatabase.getLogEntriesByFirebaseID(firebase_id)
+		user = self.taskDatabase.getUserObjectByFirebaseID(firebase_id)
 		idToNameMap = {}
 		idToCategoryMap = {}
 
@@ -144,5 +143,5 @@ class LogController:
 		return logs
 
 	def appendLogEntries(self, userObject):
-		userObject['task_log'] = self.retrieveUserLogEntries({"uid": userObject['_id']})
+		userObject['task_log'] = self.retrieveUserLogEntries(userObject['firebase_id'])
 		return userObject
