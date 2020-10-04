@@ -90,7 +90,7 @@ def registerNewUser():
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
-		
+
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 	processedRequest['firebase_id'] = firebase_id
 
@@ -112,15 +112,19 @@ def getUser():
 
 @application.route('/API/createTask/', methods=['POST'])
 def createTask():
-	necessaryKeys = ["access_token", "name", "description", "base_score", "category", "tags"]
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["name", "description", "base_score", "category", "tags"]
 	objectKeys = ["name", "description", "base_score", "category", "tags"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
-	uid = authenticateToken(request.form['access_token'])
-	processedRequest['uid'] = uid
+	processedRequest['firebase_id'] = firebase_id
 
 	result = task_ctrl.createTask(processedRequest)
 	if result is None:
@@ -130,15 +134,19 @@ def createTask():
 
 @application.route('/API/archiveTask/', methods=['POST'])
 def archiveTask():
-	necessaryKeys = ["access_token", "task_id"]
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["task_id"]
 	objectKeys = ["task_id"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
-	uid = authenticateToken(request.form['access_token'])
-	processedRequest['uid'] = uid
+	processedRequest['firebase_id'] = firebase_id
 
 	result = task_ctrl.archiveTask(processedRequest)
 	if result is None:
@@ -149,10 +157,15 @@ def archiveTask():
 # createBonusRequest(access_token,task_id,data_source,bonus_name,input_label,upper_bound,lower_bound,evaluation_type,constants)
 @application.route('/API/createBonus/', methods=['POST'])
 def createBonus():
-	necessaryKeys = ["access_token", "task_id", "data_source", "bonus_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["task_id", "data_source", "bonus_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
 	objectKeys = ["task_id", "data_source", "bonus_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
 
-	print(request.form)
+	# print(request.form)
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
@@ -160,8 +173,7 @@ def createBonus():
 
 	processedRequest['task_id'] = bson.ObjectId(processedRequest['task_id'])
 
-	uid = authenticateToken(request.form['access_token'])
-	processedRequest['uid'] = uid
+	processedRequest['firebase_id'] = firebase_id
 
 	result = bonus_ctrl.createBonus(processedRequest)
 	if result is None:
@@ -176,17 +188,21 @@ def createBonus():
 # logTaskRequest(access_token,task_id,bonus_instances,remarks) -> bonus_instances is an array of
 @application.route('/API/logTask/', methods=["POST"])
 def logTask():
-	necessaryKeys = ["access_token", "task_id", "bonus_instances", "remarks", "timestamp"]
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["task_id", "bonus_instances", "remarks", "timestamp"]
 	objectKeys = ["task_id", "bonus_instances", "remarks", "timestamp"]
 
-	print(request.form)
+	# print(request.form)
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
-	uid = authenticateToken(request.form['access_token'])
-	processedRequest['uid'] = uid
+	processedRequest['firebase_id'] = firebase_id
 
 	result = log_ctrl.logTask(processedRequest)
 	if result is None:
@@ -196,15 +212,19 @@ def logTask():
 
 @application.route('/API/deleteLog/', methods=["POST"])
 def deleteLog():
-	necessaryKeys = ["access_token", "log_id"]
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = [ "log_id"]
 	objectKeys = ["log_id"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 
-	uid = authenticateToken(request.form['access_token'])
-	processedRequest['uid'] = uid
+	processedRequest['firebase_id'] = firebase_id
 
 	result = log_ctrl.deleteLog(processedRequest)
 	if result is None:
@@ -215,6 +235,7 @@ def deleteLog():
 # getUserLogEntries(access_token)
 @application.route('/API/getUserLogEntries/', methods=["POST"])
 def getUserLogEntries():
+	# IS BROKEN
 	necessaryKeys = ["access_token"]
 	processedRequest = {}
 

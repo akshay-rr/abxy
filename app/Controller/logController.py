@@ -22,11 +22,11 @@ class LogController:
 
 		# print(logRequest['bonus_instances'])
 
-		uid = bson.ObjectId(logRequest['uid'])
+		firebase_id = logRequest['firebase_id']
 		task_id = bson.ObjectId(logRequest['task_id'])
 
 		# get the task from DB
-		task = self.taskDatabase.getTaskObjectByUserIDAndTaskID(uid, task_id)
+		task = self.taskDatabase.getTaskObjectByFirebaseIDAndTaskID(firebase_id, task_id)
 
 		if task is None:
 			return None
@@ -53,7 +53,7 @@ class LogController:
 						data = bonusDataInstance['input_quantity']
 						break
 			else:
-				data = self.bonusController.getDataQuantity(uid, task_id, timeOfLog, bonuses[i])
+				data = self.bonusController.getDataQuantity(firebase_id, task_id, timeOfLog, bonuses[i])
 				# print("DATA", data)
 				if data is None:
 					return None
@@ -71,15 +71,15 @@ class LogController:
 		timeNow = datetime.now()
 
 		# build taskLogObject
-		taskLog = {'_id': bson.ObjectId(), 'uid': uid, 'task_id': task_id, 'timestamp': timeOfLog, 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
+		taskLog = {'_id': bson.ObjectId(), 'firebase_id': firebase_id, 'task_id': task_id, 'timestamp': timeOfLog, 'bonus_instances': bonusLog, 'remarks': logRequest['remarks'], 'score': totalLogScore, 'server_time': timeNow}
 
 		# update task last_done_on
-		if self.taskDatabase.setTaskLastDone(uid, task_id, timeOfLog) is None:
+		if self.taskDatabase.setTaskLastDoneByFirebaseID(firebase_id, task_id, timeOfLog) is None:
 			return None
 
 		# print("REACHED HERE 1")
 		# update user object score
-		if self.taskDatabase.addToUserScore(uid, totalLogScore) is None:
+		if self.taskDatabase.addToUserScoreByFirebaseID(firebase_id, totalLogScore) is None:
 			return None
 
 		# print("REACHED HERE 2")
@@ -94,11 +94,11 @@ class LogController:
 	def deleteLog(self, deleteRequest):
 		# Lookup the log, find the score, subtract from the user score, update the task last done, remove the log from the DB
 
-		uid = bson.ObjectId(deleteRequest['uid'])
+		firebase_id = bson.ObjectId(deleteRequest['firebase_id'])
 		log_id = bson.ObjectId(deleteRequest['log_id'])
 
 		# Lookup the log
-		taskLogObject = self.taskDatabase.getLogEntryByUserIDandLogID(uid, log_id)
+		taskLogObject = self.taskDatabase.getLogEntryByFirebaseIDandLogID(firebase_id, log_id)
 		if taskLogObject is None:
 			return None
 
@@ -108,7 +108,7 @@ class LogController:
 		scoreOfDeletedTask = taskLogObject['score']
 
 		# remove user object score
-		if self.taskDatabase.addToUserScore(uid, -scoreOfDeletedTask) is None:
+		if self.taskDatabase.addToUserScoreByFirebaseID(firebase_id, -scoreOfDeletedTask) is None:
 			return None
 
 		# remove the log from the DB
@@ -116,12 +116,12 @@ class LogController:
 			return None
 
 		# update the task last done
-		mostRecentLog = self.taskDatabase.getMostRecentLogByUserIDAndTaskID(uid, task_id)
+		mostRecentLog = self.taskDatabase.getMostRecentLogByFirebaseIDAndTaskID(firebase_id, task_id)
 		if mostRecentLog is None:
-			if self.taskDatabase.setTaskLastDone(uid, task_id, datetime.fromtimestamp(0)) is None:
+			if self.taskDatabase.setTaskLastDoneByFirebaseID(firebase_id, task_id, datetime.fromtimestamp(0)) is None:
 				return None
 		else:
-			if self.taskDatabase.setTaskLastDone(uid, task_id, mostRecentLog['timestamp']) is None:
+			if self.taskDatabase.setTaskLastDoneByFirebaseID(firebase_id, task_id, mostRecentLog['timestamp']) is None:
 				return None
 
 		return "SUCCESS"
