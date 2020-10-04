@@ -1,3 +1,5 @@
 .idea
 **/__pycache__
 .zip
+app/mongodbdump_Oct_3_2020/
+
