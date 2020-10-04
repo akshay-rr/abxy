@@ -36,7 +36,7 @@ class UserController:
 		if insertedID is None:
 			return "INSERT FAILURE"
 		else:
-			return self.fetchLatestUserWithoutArchivedTasks(userObject['firebase_id'])
+			return self.fetchLatestUserWithoutArchivedTasksByFirebaseID(userObject['firebase_id'])
 
 	def fetchLatestUserWithLogEntriesByFirebaseId(self, firebase_id):
 		return self.logController.appendLogEntries(self.taskDatabase.getUserObjectByFirebaseID(firebase_id))

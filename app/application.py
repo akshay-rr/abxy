@@ -90,7 +90,7 @@ def registerNewUser():
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
 		return dumps("Invalid Request: Items Missing")
-
+		
 	processedRequest = extractRequiredKeys(request.form, objectKeys)
 	processedRequest['firebase_id'] = firebase_id
 
