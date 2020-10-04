@@ -79,7 +79,7 @@ class BonusController:
 
 	def createBonus(self, bonusCreationRequest):
 		bonusObject = {}
-		uid = bonusCreationRequest['uid']
+		firebase_id = bonusCreationRequest['firebase_id']
 		task_id = bonusCreationRequest['task_id']
 
 		bonusObjectKeysFromRequest = ["data_source", "bonus_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
@@ -89,12 +89,12 @@ class BonusController:
 		bonusObject['_id'] = bson.ObjectId()
 		bonusObject['created_on'] = datetime.now()
 
-		return self.taskDatabase.putNewBonus(uid, task_id, bonusObject)
+		return self.taskDatabase.putNewBonusByFirebaseID(firebase_id, task_id, bonusObject)
 
-	def getDataQuantity(self, uid, task_id, logTimestamp, bonus):
+	def getDataQuantity(self, firebase_id, task_id, logTimestamp, bonus):
 		if bonus['data_source'] == "REPETITION":
 			# get the most recent taskLog with the same uid,tid
-			mostRecentLog = self.taskDatabase.getMostRecentLogByUserIDAndTaskID(uid, task_id)
+			mostRecentLog = self.taskDatabase.getMostRecentLogByFirebaseIDAndTaskID(firebase_id, task_id)
 			if mostRecentLog is None:
 				return 0
 			for bonusInstance in mostRecentLog['bonus_instances']:

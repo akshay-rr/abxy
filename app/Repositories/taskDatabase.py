@@ -36,6 +36,13 @@ class TaskDatabase:
 				return task
 		return None
 
+	def getTaskObjectByFirebaseIDAndTaskID(self, firebase_id, task_id):
+		user = self.userCollection.find_one({"firebase_id": firebase_id})
+		for task in user['tasks']:
+			if str(task['_id']) == str(task_id):
+				return task
+		return None
+
 	def putNewUser(self, user):
 		result = self.userCollection.insert_one(user)
 		if result.inserted_id is not None:
@@ -48,8 +55,20 @@ class TaskDatabase:
 			return task['_id']
 		return None
 
+	def putNewTaskByFirebaseID(self, firebase_id, task):
+		result = self.userCollection.update_one({"firebase_id": firebase_id}, {"$push": {'tasks': task}})
+		if result.matched_count > 0:
+			return task['_id']
+		return None
+
 	def putNewBonus(self, uid, task_id, bonus):
 		result = self.userCollection.update_one({"_id": uid}, {"$push": {'tasks.$[xyz].bonuses': bonus}}, array_filters=[{"xyz._id": task_id}])
+		if result.matched_count > 0:
+			return bonus['_id']
+		return None
+
+	def putNewBonusByFirebaseID(self, firebase_id, task_id, bonus):
+		result = self.userCollection.update_one({"firebase_id": firebase_id}, {"$push": {'tasks.$[xyz].bonuses': bonus}}, array_filters=[{"xyz._id": task_id}])
 		if result.matched_count > 0:
 			return bonus['_id']
 		return None
@@ -69,14 +88,29 @@ class TaskDatabase:
 			return time
 		return None
 
+	def setTaskLastDoneByFirebaseID(self, firebase_id: str, task_id: bson.ObjectId, time):
+		result = self.userCollection.update_one({"firebase_id": firebase_id, "tasks._id": task_id}, {"$set": {"tasks.$.last_done_on": time}})
+		if result.matched_count > 0:
+			return time
+		return None
+
 	def addToUserScore(self, uid, addition):
 		result = self.userCollection.update_one({"_id": uid}, {"$inc": {"score": addition}})
 		if result.matched_count > 0:
 			return addition
 		return None
 
+	def addToUserScoreByFirebaseID(self, firebase_id, addition):
+		result = self.userCollection.update_one({"firebase_id": firebase_id}, {"$inc": {"score": addition}})
+		if result.matched_count > 0:
+			return addition
+		return None
+
 	def getMostRecentLogByUserIDAndTaskID(self, uid, task_id):
 		return self.taskLogCollection.find_one({'uid': uid, "task_id": task_id}, sort=[('timestamp', pymongo.DESCENDING)])
+
+	def getMostRecentLogByFirebaseIDAndTaskID(self, firebase_id, task_id):
+		return self.taskLogCollection.find_one({'firebase_id': firebase_id, "task_id": task_id}, sort=[('timestamp', pymongo.DESCENDING)])
 
 	def getLogEntriesByUid(self, uid):
 		return list(self.taskLogCollection.find({'uid': uid}))
@@ -99,5 +133,11 @@ class TaskDatabase:
 	def archiveTaskByUIDAndTaskID(self, uid, task_id):
 		return self.userCollection.update_one({'_id': uid}, {"$set": {"tasks.$[xyz].archived": True}}, array_filters=[{"xyz._id": task_id}])
 
+	def archiveTaskByFirebaseIDAndTaskID(self, firebase_id, task_id):
+		return self.userCollection.update_one({'firebase_id': firebase_id}, {"$set": {"tasks.$[xyz].archived": True}}, array_filters=[{"xyz._id": task_id}])
+
 	def getLogEntryByUserIDandLogID(self, uid, logID):
 		return self.taskLogCollection.find_one({'uid': uid, "_id": logID})
+
+	def getLogEntryByFirebaseIDandLogID(self, firebase_id, logID):
+		return self.taskLogCollection.find_one({'firebase_id': firebase_id, "_id": logID})

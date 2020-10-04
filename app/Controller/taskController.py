@@ -9,7 +9,7 @@ class TaskController:
 
 	def createTask(self, taskCreationRequest):
 		taskObject = {}
-		uid = taskCreationRequest['uid']
+		firebase_id = taskCreationRequest['firebase_id']
 		taskObjectKeysFromRequest = ["name", "description", "base_score", "category", "tags"]
 		for key in taskObjectKeysFromRequest:
 			taskObject[key] = taskCreationRequest[key]
@@ -19,7 +19,7 @@ class TaskController:
 		taskObject['bonuses'] = []
 		taskObject['archived'] = False
 
-		return self.taskDatabase.putNewTask(uid, taskObject)
+		return self.taskDatabase.putNewTaskByFirebaseID(firebase_id, taskObject)
 
 	def archiveTask(self, taskArchivalRequest):
-		return self.taskDatabase.archiveTaskByUIDAndTaskID(bson.ObjectId(taskArchivalRequest['uid']), bson.ObjectId(taskArchivalRequest['task_id']))
+		return self.taskDatabase.archiveTaskByFirebaseIDAndTaskID(taskArchivalRequest['firebase_id'], bson.ObjectId(taskArchivalRequest['task_id']))
