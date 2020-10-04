@@ -143,5 +143,5 @@ class LogController:
 		return logs
 
 	def appendLogEntries(self, userObject):
-		userObject['task_log'] = self.retrieveUserLogEntries(userObject['firebase_id'])
+		userObject['task_log'] = self.retrieveUserLogEntriesByFirebaseID(userObject['firebase_id'])
 		return userObject
