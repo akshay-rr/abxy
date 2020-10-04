@@ -94,7 +94,7 @@ class LogController:
 	def deleteLog(self, deleteRequest):
 		# Lookup the log, find the score, subtract from the user score, update the task last done, remove the log from the DB
 
-		firebase_id = bson.ObjectId(deleteRequest['firebase_id'])
+		firebase_id = deleteRequest['firebase_id']
 		log_id = bson.ObjectId(deleteRequest['log_id'])
 
 		# Lookup the log
