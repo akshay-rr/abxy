@@ -31,6 +31,7 @@ class UserController:
 			userObject[key] = signInRequest[key]
 
 		userObject['tasks'] = []
+		userObject['rewards'] = []
 		userObject['score'] = 0
 		insertedID = self.taskDatabase.putNewUser(userObject)
 		if insertedID is None:

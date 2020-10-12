@@ -1,8 +1,10 @@
 db.createCollection("users", {
     validator: {
-        $jsonSchema: {
+        $jsonSchema:
+
+{
   "bsonType": "object",
-  "required": ["_id","name","email","firebase_id","score","tasks"],
+  "required": ["_id","name","email","firebase_id","score","tasks", "rewards"],
   "additionalProperties": false,
   "properties": {
     "_id": {
@@ -177,6 +179,8 @@ db.createCollection("users", {
       "uniqueItems": true
     }
   }
-}},
+}
+
+     },
     validationAction:"error"
 })
