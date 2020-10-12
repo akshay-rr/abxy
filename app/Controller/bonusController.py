@@ -105,3 +105,18 @@ class BonusController:
 					else:
 						return 0
 		return 0
+
+	def getDataQuantityForReward(self, firebase_id, reward_id, logTimestamp, penalty):
+		if penalty['data_source'] == "REPETITION":
+			# get the most recent taskLog with the same uid,tid
+			mostRecentLog = self.taskDatabase.getMostRecentRewardLogByFirebaseIDAndTaskID(firebase_id, reward_id)
+			if mostRecentLog is None:
+				return 0
+			for penaltyInstance in mostRecentLog['penalty_instances']:
+				# check the input value for the same bonus
+				if penaltyInstance['bonus_id'] == penalty['_id']:
+					if BonusController.isTimeRepeat(mostRecentLog['timestamp'], logTimestamp, penalty['input_label']):
+						return float(penaltyInstance['input_quantity'] + 1)
+					else:
+						return 0
+		return 0

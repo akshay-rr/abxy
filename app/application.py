@@ -176,6 +176,28 @@ def archiveTask():
 	return dumps(str(result))
 
 
+@application.route('/API/archiveReward/', methods=['POST'])
+def archiveReward():
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["reward_id"]
+	objectKeys = ["reward_id"]
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	processedRequest['firebase_id'] = firebase_id
+
+	result = task_ctrl.archiveReward(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
+
 # createBonusRequest(access_token,task_id,data_source,bonus_name,input_label,upper_bound,lower_bound,evaluation_type,constants)
 @application.route('/API/createBonus/', methods=['POST'])
 def createBonus():
@@ -227,6 +249,30 @@ def logTask():
 	processedRequest['firebase_id'] = firebase_id
 
 	result = log_ctrl.logTask(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
+
+@application.route('/API/logReward/', methods=["POST"])
+def logReward():
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["reward_id", "penalty_instances", "remarks", "timestamp"]
+	objectKeys = ["reward_id", "penalty_instances", "remarks", "timestamp"]
+
+	# print(request.form)
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	processedRequest['firebase_id'] = firebase_id
+
+	result = log_ctrl.logReward(processedRequest)
 	if result is None:
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))

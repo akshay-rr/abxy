@@ -145,3 +145,84 @@ class LogController:
 	def appendLogEntries(self, userObject):
 		userObject['task_log'] = self.retrieveUserLogEntriesByFirebaseID(userObject['firebase_id'])
 		return userObject
+
+	def logReward(self, logRequest) -> int:
+		# logRequest has a uid, task_id, a remarks field, and a list of bonuses, where each bonus is a json object(dict) with a number and json id
+
+		# get the task from DB
+		# loop through each bonus, source the data either from the logRequest or from system sources
+		# loop through each bonus with filled data, calculate score addition, build bonus array
+		# update task last_done_one
+		# update user score
+		# add to log
+
+		# print(logRequest['bonus_instances'])
+
+		firebase_id = logRequest['firebase_id']
+		reward_id = bson.ObjectId(logRequest['reward_id'])
+
+		# get the task from DB
+		reward = self.taskDatabase.getRewardObjectByFirebaseIDAndRewardID(firebase_id, reward_id)
+
+		if reward is None:
+			return None
+
+		# we're building this bonusLog to eventually be put into the taskLog db
+		penaltyLog = []
+
+		# the actual list of all bonuses
+		penalties = reward['penalties']
+		totalLogScoreSubtraction = 0.0
+
+		timeOfLog = dateutil.parser.parse(logRequest['timestamp'])
+		# timeOfLog = datetime.utcfromtimestamp(int(logRequest["timestamp"] / 1000))
+
+		for i in range(len(penalties)):
+			penaltyLog.append({})
+
+			data = 0.0
+			# source the data either from the logRequest or from system sources
+			if penalties[i]['data_source'] == "USER_INPUT":
+				# get from logRequest
+				for rewardDataInstance in logRequest['reward_instances']:
+					if str(rewardDataInstance['reward_id']) == str(penalties[i]['_id']):
+						data = rewardDataInstance['input_quantity']
+						break
+			else:
+				data = self.bonusController.getDataQuantityForReward(firebase_id, reward_id, timeOfLog, penalties[i])
+				# print("DATA", data)
+				if data is None:
+					return None
+
+			# calculate score addition, build bonus array
+			penaltyLog[i]['penalty_id'] = penalties[i]['_id']
+			penaltyLog[i]['input_quantity'] = float(data)
+			penaltyLog[i]['score_addition'] = int(self.bonusController.computeScoreAddition(penalties[i], penalties[i]['input_quantity']))
+			if penaltyLog[i]['score_addition'] is None:
+				return None
+			totalLogScoreSubtraction += penaltyLog[i]['score_addition']
+		# print("REACHED HERE")
+
+		totalLogCost = -1*int(reward['base_cost'] + totalLogScoreSubtraction)
+		timeNow = datetime.now()
+
+		# build taskLogObject
+		rewardLog = {'_id': bson.ObjectId(), 'firebase_id': firebase_id, 'reward_id': reward_id, 'timestamp': timeOfLog, 'penalty_instances': penaltyLog, 'remarks': logRequest['remarks'], 'cost': totalLogCost, 'server_time': timeNow}
+
+		# update task last_done_on
+		if self.taskDatabase.setRewardLastDoneByFirebaseID(firebase_id, reward_id, timeOfLog) is None:
+			return None
+
+		# print("REACHED HERE 1")
+		# update user object score
+		if self.taskDatabase.addToUserScoreByFirebaseID(firebase_id, totalLogCost) is None:
+			return None
+
+		# print("REACHED HERE 2")
+		# print(taskLog)
+
+		# put Task Log in db
+		if self.taskDatabase.putNewRewardLog(rewardLog) is None:
+			return None
+
+		return totalLogCost

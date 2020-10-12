@@ -19,6 +19,7 @@ class TaskDatabase:
 		self.userCollection = self.db['users']
 		self.taskLogCollection = self.db['taskLog']
 		self.activeSessionCollection = self.db['activeSessions']
+		self.rewardLogCollection = self.db['rewardLog']
 
 	def getUserObjectByEmailAndGoogleID(self, email: str, google_id: str):
 		return self.userCollection.find_one({"email": email, "google_id": google_id})
@@ -40,6 +41,13 @@ class TaskDatabase:
 		user = self.userCollection.find_one({"firebase_id": firebase_id})
 		for task in user['tasks']:
 			if str(task['_id']) == str(task_id):
+				return task
+		return None
+
+	def getRewardObjectByFirebaseIDAndRewardID(self, firebase_id, reward_id):
+		user = self.userCollection.find_one({"firebase_id": firebase_id})
+		for task in user['rewards']:
+			if str(task['_id']) == str(reward_id):
 				return task
 		return None
 
@@ -85,6 +93,13 @@ class TaskDatabase:
 			return result.inserted_id
 		return None
 
+	def putNewRewardLog(self, rewardLog):
+		result = self.rewardLogCollection.insert_one(rewardLog)
+		if result.inserted_id is not None:
+			return result.inserted_id
+		return None
+
+
 	def deleteLogByID(self, log_id: bson.ObjectId):
 		return self.taskLogCollection.find_one_and_delete({"_id": log_id})
 
@@ -96,6 +111,12 @@ class TaskDatabase:
 
 	def setTaskLastDoneByFirebaseID(self, firebase_id: str, task_id: bson.ObjectId, time):
 		result = self.userCollection.update_one({"firebase_id": firebase_id, "tasks._id": task_id}, {"$set": {"tasks.$.last_done_on": time}})
+		if result.matched_count > 0:
+			return time
+		return None
+
+	def setRewardLastDoneByFirebaseID(self, firebase_id: str, reward_id: bson.ObjectId, time):
+		result = self.userCollection.update_one({"firebase_id": firebase_id, "rewards._id": reward_id}, {"$set": {"rewards.$.last_done_on": time}})
 		if result.matched_count > 0:
 			return time
 		return None
@@ -117,6 +138,9 @@ class TaskDatabase:
 
 	def getMostRecentLogByFirebaseIDAndTaskID(self, firebase_id, task_id):
 		return self.taskLogCollection.find_one({'firebase_id': firebase_id, "task_id": task_id}, sort=[('timestamp', pymongo.DESCENDING)])
+
+	def getMostRecentRewardLogByFirebaseIDAndTaskID(self, firebase_id, reward_id):
+		return self.rewardLogCollection.find_one({'firebase_id': firebase_id, "reward_id": reward_id}, sort=[('timestamp', pymongo.DESCENDING)])
 
 	def getLogEntriesByUid(self, uid):
 		return list(self.taskLogCollection.find({'uid': uid}))
