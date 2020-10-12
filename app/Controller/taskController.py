@@ -27,13 +27,13 @@ class TaskController:
 	def createReward(self, rewardCreationRequest):
 		rewardObject = {}
 		firebase_id = rewardCreationRequest['firebase_id']
-		rewardObjectKeysFromRequest = ["name", "description", "base_score", "category", "tags"]
+		rewardObjectKeysFromRequest = ["name", "description", "base_cost", "category", "tags"]
 		for key in rewardObjectKeysFromRequest:
 			rewardObject[key] = rewardCreationRequest[key]
 		rewardObject['_id'] = bson.ObjectId()
 		rewardObject['created_on'] = datetime.now()
 		rewardObject['last_done_on'] = datetime.fromtimestamp(0)
-		rewardObject['bonuses'] = []
+		rewardObject['penalties'] = []
 		rewardObject['archived'] = False
 
 		return self.taskDatabase.putNewRewardByFirebaseID(firebase_id, rewardObject)

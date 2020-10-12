@@ -1,0 +1,47 @@
+{
+  "bsonType": "object",
+  "required": ["_id", "firebase_id", "reward_id", "timestamp", "server_time", "penalty_instances","remarks", "cost"],
+  "additionalProperties": false,
+  "properties": {
+    "_id": {
+      "bsonType": "objectId"
+    },
+    "firebase_id": {
+      "bsonType": "string"
+    },
+    "reward_id":{
+      "bsonType": "objectId"
+    },
+    "timestamp": {
+      "bsonType": "date"
+    },
+    "server_time": {
+      "bsonType": "date"
+    },
+    "remarks": {
+      "bsonType": "string"
+    },
+    "cost": {
+      "bsonType": "int"
+    },
+    "penalty_instances": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "required": ["penalty_id", "input_quantity","score_addition"],
+        "additionalProperties": false,
+        "properties": {
+          "penalty_id": {
+            "bsonType": "objectId"
+          },
+          "input_quantity": {
+            "bsonType": "double"
+          },
+          "score_addition": {
+            "bsonType": "int"
+          }
+        }
+      }
+    }
+  }
+}
