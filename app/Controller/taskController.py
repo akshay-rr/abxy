@@ -23,3 +23,20 @@ class TaskController:
 
 	def archiveTask(self, taskArchivalRequest):
 		return self.taskDatabase.archiveTaskByFirebaseIDAndTaskID(taskArchivalRequest['firebase_id'], bson.ObjectId(taskArchivalRequest['task_id']))
+
+	def createReward(self, rewardCreationRequest):
+		rewardObject = {}
+		firebase_id = rewardCreationRequest['firebase_id']
+		rewardObjectKeysFromRequest = ["name", "description", "base_score", "category", "tags"]
+		for key in rewardObjectKeysFromRequest:
+			rewardObject[key] = rewardCreationRequest[key]
+		rewardObject['_id'] = bson.ObjectId()
+		rewardObject['created_on'] = datetime.now()
+		rewardObject['last_done_on'] = datetime.fromtimestamp(0)
+		rewardObject['bonuses'] = []
+		rewardObject['archived'] = False
+
+		return self.taskDatabase.putNewRewardByFirebaseID(firebase_id, rewardObject)
+
+	def archiveReward(self, rewardArchivalRequest):
+		return self.taskDatabase.archiveRewardByFirebaseIDAndTaskID(rewardArchivalRequest['firebase_id'], bson.ObjectId(rewardArchivalRequest['task_id']))

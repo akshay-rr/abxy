@@ -24,7 +24,7 @@ db.createCollection("users", {
       "bsonType": "array",
       "items": {
         "bsonType": "object",
-        "required": ["_id","name","description","base_score","category","bonuses", "created_on", "last_done_on"],
+        "required": ["_id","name","description","base_score","category","bonuses", "penalties", "created_on", "last_done_on"],
         "properties": {
           "_id": {
             "bsonType": "objectId"
@@ -97,9 +97,86 @@ db.createCollection("users", {
         }
       },
       "uniqueItems": true
+    },
+    "rewards": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "required": ["_id","name","description","base_cost","category","penalties", "created_on", "last_done_on"],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "name": {
+            "bsonType": "string"
+          },
+          "tags": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "string"
+            }
+          },
+          "description": {
+            "bsonType": "string"
+          },
+          "base_cost": {
+            "bsonType": "int"
+          },
+          "category": {
+            "bsonType": "string"
+          },
+          "penalties": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "object",
+              "required": ["_id","data_source","penalty_name","input_label","upper_bound","lower_bound", "evaluation_type","constants", "created_on"],
+              "additionalProperties": false,
+              "properties": {
+                "_id": {
+                  "bsonType": "objectId"
+                },
+                "data_source": {
+                  "bsonType": "string"
+                },
+                "penalty_name": {
+                  "bsonType": "string"
+                },
+                "input_label": {
+                  "bsonType": "string"
+                },
+                "upper_bound": {
+                  "bsonType": "double"
+                },
+                "lower_bound": {
+                  "bsonType": "double"
+                },
+                "evaluation_type": {
+                  "bsonType": "string"
+                },
+                "constants": {
+                  "bsonType": "array",
+                  "items": {
+                    "bsonType": "double"
+                  }
+                },
+                "created_on": {
+                  "bsonType": "date"
+                }
+              }
+            }
+          },
+          "created_on": {
+            "bsonType": "date"
+          },
+          "last_done_on": {
+            "bsonType": "date"
+          }
+
+        }
+      },
+      "uniqueItems": true
     }
   }
-}
-    },
+}},
     validationAction:"error"
 })

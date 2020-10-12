@@ -132,6 +132,28 @@ def createTask():
 	return dumps(str(result))
 
 
+@application.route('/API/createReward/', methods=['POST'])
+def createReward():
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["name", "description", "base_cost", "category", "tags"]
+	objectKeys = ["name", "description", "base_cost", "category", "tags"]
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	processedRequest['firebase_id'] = firebase_id
+
+	result = task_ctrl.createReward(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
+
 @application.route('/API/archiveTask/', methods=['POST'])
 def archiveTask():
 	id_token = request.headers['id_token']
@@ -217,7 +239,7 @@ def deleteLog():
 	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
 		return dumps(firebase_id)
 
-	necessaryKeys = [ "log_id"]
+	necessaryKeys = ["log_id"]
 	objectKeys = ["log_id"]
 
 	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):

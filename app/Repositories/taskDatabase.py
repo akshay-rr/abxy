@@ -61,6 +61,12 @@ class TaskDatabase:
 			return task['_id']
 		return None
 
+	def putNewRewardByFirebaseID(self, firebase_id, reward):
+		result = self.userCollection.update_one({"firebase_id": firebase_id}, {"$push": {'rewards': reward}})
+		if result.matched_count > 0:
+			return reward['_id']
+		return None
+
 	def putNewBonus(self, uid, task_id, bonus):
 		result = self.userCollection.update_one({"_id": uid}, {"$push": {'tasks.$[xyz].bonuses': bonus}}, array_filters=[{"xyz._id": task_id}])
 		if result.matched_count > 0:
@@ -135,6 +141,9 @@ class TaskDatabase:
 
 	def archiveTaskByFirebaseIDAndTaskID(self, firebase_id, task_id):
 		return self.userCollection.update_one({'firebase_id': firebase_id}, {"$set": {"tasks.$[xyz].archived": True}}, array_filters=[{"xyz._id": task_id}])
+
+	def archiveRewardByFirebaseIDAndTaskID(self, firebase_id, reward_id):
+		return self.userCollection.update_one({'firebase_id': firebase_id}, {"$set": {"rewards.$[xyz].archived": True}}, array_filters=[{"xyz._id": reward_id}])
 
 	def getLogEntryByUserIDandLogID(self, uid, logID):
 		return self.taskLogCollection.find_one({'uid': uid, "_id": logID})
