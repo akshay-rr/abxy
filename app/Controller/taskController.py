@@ -39,4 +39,4 @@ class TaskController:
 		return self.taskDatabase.putNewRewardByFirebaseID(firebase_id, rewardObject)
 
 	def archiveReward(self, rewardArchivalRequest):
-		return self.taskDatabase.archiveRewardByFirebaseIDAndTaskID(rewardArchivalRequest['firebase_id'], bson.ObjectId(rewardArchivalRequest['task_id']))
+		return self.taskDatabase.archiveRewardByFirebaseIDAndTaskID(rewardArchivalRequest['firebase_id'], bson.ObjectId(rewardArchivalRequest['reward_id']))

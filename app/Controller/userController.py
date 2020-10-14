@@ -45,7 +45,9 @@ class UserController:
 	def fetchLatestUserWithoutArchivedTasksByFirebaseID(self, firebase_id):
 		user = self.fetchLatestUserWithLogEntriesByFirebaseId(firebase_id)
 		not_archived_tasks = [task for task in user['tasks'] if ('archived' not in task) or (not task['archived'])]
+		not_archived_rewards = [reward for reward in user['rewards'] if ('archived' not in reward) or (not reward['archived'])]
 		user = convert_all_dates_to_strings(user)
 
 		user['tasks'] = not_archived_tasks
+		user['rewards'] = not_archived_rewards
 		return user
