@@ -225,6 +225,7 @@ def createBonus():
 	return dumps(str(result))
 
 
+@application.route('/API/createPenalty/', methods=['POST'])
 def createPenalty():
 	id_token = request.headers['id_token']
 	firebase_id = authenticateToken(id_token)
