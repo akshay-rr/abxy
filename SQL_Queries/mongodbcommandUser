@@ -26,7 +26,7 @@ db.createCollection("users", {
       "bsonType": "array",
       "items": {
         "bsonType": "object",
-        "required": ["_id","name","description","base_score","category","bonuses", "penalties", "created_on", "last_done_on"],
+        "required": ["_id","name","description","base_score","category","bonuses", "created_on", "last_done_on"],
         "properties": {
           "_id": {
             "bsonType": "objectId"
