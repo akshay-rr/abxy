@@ -225,6 +225,30 @@ def createBonus():
 	return dumps(str(result))
 
 
+def createPenalty():
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["reward_id", "data_source", "penalty_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
+	objectKeys = ["reward_id", "data_source", "penalty_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
+
+	# print(request.form)
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	processedRequest['reward_id'] = bson.ObjectId(processedRequest['reward_id'])
+
+	processedRequest['firebase_id'] = firebase_id
+
+	result = bonus_ctrl.createPenalty(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
 # @application.route('/API/deleteBonus',methods=['DELETE'])
 # def createBonus():
 

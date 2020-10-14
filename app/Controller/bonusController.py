@@ -91,6 +91,20 @@ class BonusController:
 
 		return self.taskDatabase.putNewBonusByFirebaseID(firebase_id, task_id, bonusObject)
 
+	def createPenalty(self, penaltyCreationRequest):
+		penaltyObject = {}
+		firebase_id = penaltyCreationRequest['firebase_id']
+		reward_id = penaltyCreationRequest['reward_id']
+
+		penaltyObjectKeysFromRequest = ["data_source", "penalty_name", "input_label", "upper_bound", "lower_bound", "evaluation_type", "constants"]
+		for key in penaltyObjectKeysFromRequest:
+			penaltyObject[key] = penaltyCreationRequest[key]
+
+		penaltyObject['_id'] = bson.ObjectId()
+		penaltyObject['created_on'] = datetime.now()
+
+		return self.taskDatabase.putNewPenaltyByFirebaseID(firebase_id, reward_id, penaltyObject)
+
 	def getDataQuantity(self, firebase_id, task_id, logTimestamp, bonus):
 		if bonus['data_source'] == "REPETITION":
 			# get the most recent taskLog with the same uid,tid

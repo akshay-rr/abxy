@@ -87,6 +87,12 @@ class TaskDatabase:
 			return bonus['_id']
 		return None
 
+	def putNewPenaltyByFirebaseID(self, firebase_id, reward_id, penalty):
+		result = self.userCollection.update_one({"firebase_id": firebase_id}, {"$push": {'rewards.$[xyz].penalties': penalty}}, array_filters=[{"xyz._id": reward_id}])
+		if result.matched_count > 0:
+			return penalty['_id']
+		return None
+
 	def putNewLog(self, taskLog):
 		result = self.taskLogCollection.insert_one(taskLog)
 		if result.inserted_id is not None:
@@ -98,7 +104,6 @@ class TaskDatabase:
 		if result.inserted_id is not None:
 			return result.inserted_id
 		return None
-
 
 	def deleteLogByID(self, log_id: bson.ObjectId):
 		return self.taskLogCollection.find_one_and_delete({"_id": log_id})
