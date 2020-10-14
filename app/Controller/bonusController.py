@@ -128,7 +128,7 @@ class BonusController:
 				return 0
 			for penaltyInstance in mostRecentLog['penalty_instances']:
 				# check the input value for the same bonus
-				if penaltyInstance['bonus_id'] == penalty['_id']:
+				if penaltyInstance['penalty_id'] == penalty['_id']:
 					if BonusController.isTimeRepeat(mostRecentLog['timestamp'], logTimestamp, penalty['input_label']):
 						return float(penaltyInstance['input_quantity'] + 1)
 					else:
