@@ -197,7 +197,7 @@ class LogController:
 			# calculate score addition, build bonus array
 			penaltyLog[i]['penalty_id'] = penalties[i]['_id']
 			penaltyLog[i]['input_quantity'] = float(data)
-			penaltyLog[i]['score_addition'] = int(self.bonusController.computeScoreAddition(penalties[i], penalties[i]['input_quantity']))
+			penaltyLog[i]['score_addition'] = int(self.bonusController.computeScoreAddition(penalties[i], penaltyLog[i]['input_quantity']))
 			if penaltyLog[i]['score_addition'] is None:
 				return None
 			totalLogScoreSubtraction += penaltyLog[i]['score_addition']
