@@ -184,7 +184,7 @@ class LogController:
 			# source the data either from the logRequest or from system sources
 			if penalties[i]['data_source'] == "USER_INPUT":
 				# get from logRequest
-				for rewardDataInstance in logRequest['reward_instances']:
+				for rewardDataInstance in logRequest['penalty_instances']:
 					if str(rewardDataInstance['reward_id']) == str(penalties[i]['_id']):
 						data = rewardDataInstance['input_quantity']
 						break
