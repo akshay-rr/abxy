@@ -142,8 +142,25 @@ class LogController:
 
 		return logs
 
+	def retrieveUserRewardLogEntriesByFirebaseID(self, firebase_id):
+		logs = self.taskDatabase.getRewardLogEntriesByFirebaseID(firebase_id)
+		user = self.taskDatabase.getUserObjectByFirebaseID(firebase_id)
+		idToNameMap = {}
+		idToCategoryMap = {}
+
+		for reward in user['rewards']:
+			idToNameMap[reward['_id']] = reward['name']
+			idToCategoryMap[reward['_id']] = reward['category']
+
+		for i in range(len(logs)):
+			logs[i]['reward_name'] = idToNameMap[logs[i]['reward_id']]
+			logs[i]['reward_category'] = idToCategoryMap[logs[i]['reward_id']]
+
+		return logs
+
 	def appendLogEntries(self, userObject):
 		userObject['task_log'] = self.retrieveUserLogEntriesByFirebaseID(userObject['firebase_id'])
+		userObject['reward_log'] = self.retrieveUserRewardLogEntriesByFirebaseID(userObject['firebase_id'])
 		return userObject
 
 	def logReward(self, logRequest) -> int:
