@@ -226,3 +226,38 @@ class LogController:
 			return None
 
 		return totalLogCost
+
+	def deleteRewardLog(self, deleteRequest):
+		# Lookup the log, find the score, subtract from the user score, update the task last done, remove the log from the DB
+
+		firebase_id = deleteRequest['firebase_id']
+		reward_log_id = bson.ObjectId(deleteRequest['reward_log_id'])
+
+		# Lookup the log
+		rewardLogObject = self.taskDatabase.getRewardLogEntryByFirebaseIDandLogID(firebase_id, reward_log_id)
+		if rewardLogObject is None:
+			return None
+
+		reward_id = rewardLogObject['task_id']
+
+		# find the score
+		scoreOfDeletedReward = rewardLogObject['score']
+
+		# remove user object score
+		if self.taskDatabase.addToUserScoreByFirebaseID(firebase_id, scoreOfDeletedReward) is None:
+			return None
+
+		# remove the log from the DB
+		if self.taskDatabase.deleteRewardLogByID(reward_log_id) is None:
+			return None
+
+		# update the task last done
+		mostRecentRewardLog = self.taskDatabase.getMostRecentRewardLogByFirebaseIDAndTaskID(firebase_id, reward_id)
+		if mostRecentRewardLog is None:
+			if self.taskDatabase.setRewardLastDoneByFirebaseID(firebase_id, reward_id, datetime.fromtimestamp(0)) is None:
+				return None
+		else:
+			if self.taskDatabase.setRewardLastDoneByFirebaseID(firebase_id, reward_id, mostRecentRewardLog['timestamp']) is None:
+				return None
+
+		return "SUCCESS"

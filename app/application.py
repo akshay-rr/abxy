@@ -250,6 +250,7 @@ def createPenalty():
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))
 
+
 # @application.route('/API/deleteBonus',methods=['DELETE'])
 # def createBonus():
 
@@ -320,6 +321,28 @@ def deleteLog():
 	processedRequest['firebase_id'] = firebase_id
 
 	result = log_ctrl.deleteLog(processedRequest)
+	if result is None:
+		return dumps("IT DIDN'T WORK")
+	return dumps(str(result))
+
+
+@application.route('/API/deleteRewardLog/', methods=["POST"])
+def deleteRewardLog():
+	id_token = request.headers['id_token']
+	firebase_id = authenticateToken(id_token)
+	if firebase_id == "ID TOKEN MALFORMED" or firebase_id == "ID TOKEN EXPIRED":
+		return dumps(firebase_id)
+
+	necessaryKeys = ["reward_log_id"]
+	objectKeys = ["reward_log_id"]
+
+	if not verifyNecessaryRequestKeys(request.form, necessaryKeys):
+		return dumps("Invalid Request: Items Missing")
+	processedRequest = extractRequiredKeys(request.form, objectKeys)
+
+	processedRequest['firebase_id'] = firebase_id
+
+	result = log_ctrl.deleteRewardLog(processedRequest)
 	if result is None:
 		return dumps("IT DIDN'T WORK")
 	return dumps(str(result))

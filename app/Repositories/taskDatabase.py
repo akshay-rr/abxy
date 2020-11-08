@@ -108,6 +108,9 @@ class TaskDatabase:
 	def deleteLogByID(self, log_id: bson.ObjectId):
 		return self.taskLogCollection.find_one_and_delete({"_id": log_id})
 
+	def deleteRewardLogByID(self, reward_log_id: bson.ObjectId):
+		return self.rewardLogCollection.find_one_and_delete({"_id": reward_log_id})
+
 	def setTaskLastDone(self, uid: bson.ObjectId, task_id: bson.ObjectId, time):
 		result = self.userCollection.update_one({"_id": uid, "tasks._id": task_id}, {"$set": {"tasks.$.last_done_on": time}})
 		if result.matched_count > 0:
@@ -179,3 +182,6 @@ class TaskDatabase:
 
 	def getLogEntryByFirebaseIDandLogID(self, firebase_id, logID):
 		return self.taskLogCollection.find_one({'firebase_id': firebase_id, "_id": logID})
+
+	def getRewardLogEntryByFirebaseIDandLogID(self, firebase_id, rewardLogID):
+		return self.rewardLogCollection.find_one({'firebase_id': firebase_id, "_id": rewardLogID})
