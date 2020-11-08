@@ -255,13 +255,13 @@ class LogController:
 		if rewardLogObject is None:
 			return None
 
-		reward_id = rewardLogObject['task_id']
+		reward_id = rewardLogObject['reward_id']
 
 		# find the score
-		scoreOfDeletedReward = rewardLogObject['score']
+		scoreOfDeletedReward = rewardLogObject['cost']
 
 		# remove user object score
-		if self.taskDatabase.addToUserScoreByFirebaseID(firebase_id, scoreOfDeletedReward) is None:
+		if self.taskDatabase.addToUserScoreByFirebaseID(firebase_id, -scoreOfDeletedReward) is None:
 			return None
 
 		# remove the log from the DB
