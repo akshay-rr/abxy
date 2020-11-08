@@ -156,6 +156,9 @@ class TaskDatabase:
 	def getLogEntriesByFirebaseID(self, firebase_id):
 		return list(self.taskLogCollection.find({'firebase_id': firebase_id}))
 
+	def getRewardLogEntriesByFirebaseID(self, firebase_id):
+		return list(self.rewardLogCollection.find({'firebase_id': firebase_id}))
+
 	def putActiveUser(self, accessToken, uid):
 		result = self.activeSessionCollection.insert_one({"access_token": accessToken, "uid": uid})
 		if result.inserted_id is not None:
