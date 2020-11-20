@@ -71,6 +71,9 @@ def extractRequiredKeys(myMap: dict, required: list) -> dict:
 			newMap[key] = [float(x) for x in newMap[key]]
 	return newMap
 
+@application.route('/')
+def index():
+	return "********** ABXY BACKEND SERVICE **********"
 
 @application.route('/API/Health/', methods=['POST'])
 def health():
